@@ -13,7 +13,7 @@ import EntryFilters from '@/modules/directory/components/public/EntryFilters'
 import PublicMap from '@/modules/directory/components/public/PublicMap'
 import type { CategorySort } from '@/modules/directory/lib/db'
 import { resolveThemeLayout } from '@/lib/layout/resolveThemeLayout'
-import { getModuleLayoutPuckRscConfig } from '@/lib/puck/config'
+import { getModuleLayoutPuckRscConfig } from '@/lib/puck/config.rsc'
 import { injectCategoryContext } from '@/modules/directory/lib/inject-category-context'
 import type { PuckData } from '@/modules/directory/lib/types'
 

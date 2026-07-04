@@ -9,7 +9,7 @@ import { descriptionRscConfig } from '@/modules/directory/components/puck/descri
 import DirectoryStyles from '@/modules/directory/components/public/DirectoryStyles'
 import EntryLocationMap from '@/modules/directory/components/public/EntryLocationMap'
 import { resolveThemeLayout } from '@/lib/layout/resolveThemeLayout'
-import { getModuleLayoutPuckRscConfig } from '@/lib/puck/config'
+import { getModuleLayoutPuckRscConfig } from '@/lib/puck/config.rsc'
 import { injectEntryContext } from '@/modules/directory/lib/inject-entry-context'
 import type { PuckData } from '@/modules/directory/lib/types'
 
