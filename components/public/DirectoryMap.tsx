@@ -30,14 +30,31 @@ export default function DirectoryMap({ entries, categoryColours, zoom = 11, cent
     let cancelled = false
     let map: any
 
-    Promise.all([import('leaflet'), import('leaflet.markercluster')]).then(([leafletModule]) => {
+    let resizeObserver: ResizeObserver | undefined
+    let hintEl: HTMLDivElement | undefined
+    let onWheel: ((e: WheelEvent) => void) | undefined
+    let hintTimer: ReturnType<typeof setTimeout> | undefined
+    let container: HTMLDivElement | undefined
+
+    import('leaflet').then(async (leafletModule) => {
       if (cancelled || !containerRef.current) return
       const L = leafletModule.default ?? leafletModule
+      // leaflet.markercluster is an old-style UMD plugin: it reads the bare
+      // `L` identifier at module top-level, expecting Leaflet exposed as a
+      // global (as it would be via a <script> tag). Without this it throws
+      // "ReferenceError: Can't find variable: L" the instant it's imported.
+      ;(window as any).L = L
+      await import('leaflet.markercluster')
+      if (cancelled || !containerRef.current) return
+      container = containerRef.current
 
       const mapCentre: [number, number] = singlePin && entries[0] ? [entries[0].lat, entries[0].lng] : centre
       const mapZoom = singlePin ? Math.max(zoom, 14) : zoom
 
-      map = L.map(containerRef.current).setView(mapCentre, mapZoom)
+      // Wheel-zoom is off by default; a held modifier key re-enables it (see
+      // wheel handler below) so scrolling the page over a map doesn't trap
+      // the user's scroll.
+      map = L.map(container, { scrollWheelZoom: false }).setView(mapCentre, mapZoom)
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         maxZoom: 19,
@@ -70,11 +87,50 @@ export default function DirectoryMap({ entries, categoryColours, zoom = 11, cent
         const clusterGroup = (L as any).markerClusterGroup()
         markers.forEach((m) => clusterGroup.addLayer(m))
         map.addLayer(clusterGroup)
+        // Fit every marker in view rather than the admin-configured default
+        // centre/zoom, which was frequently too tight or off-centre.
+        map.fitBounds(clusterGroup.getBounds(), { padding: [32, 32], maxZoom: 15 })
       }
+
+      // The container can still be mid-layout (gallery images loading, fonts
+      // swapping) when the map is created, leaving tiles unfetched outside
+      // the size measured at init - shows up as a blank strip. Recompute on
+      // any resize.
+      resizeObserver = new ResizeObserver(() => map.invalidateSize())
+      resizeObserver.observe(container)
+
+      // Google Maps-style scroll lock: wheel only zooms while the modifier is
+      // held, otherwise the page scrolls past normally and we show a hint.
+      const isMac = typeof navigator !== 'undefined' && /mac/i.test(navigator.platform || navigator.userAgent)
+      hintEl = document.createElement('div')
+      hintEl.textContent = isMac ? 'Use ⌘ + scroll to zoom the map' : 'Use ctrl + scroll to zoom the map'
+      Object.assign(hintEl.style, {
+        position: 'absolute', inset: '0', display: 'flex', alignItems: 'center', justifyContent: 'center',
+        textAlign: 'center', padding: '1rem', background: 'rgba(0,0,0,0.45)', color: '#fff',
+        fontSize: '0.875rem', fontWeight: '500', opacity: '0', transition: 'opacity 0.15s ease',
+        pointerEvents: 'none', zIndex: '1000',
+      } satisfies Partial<CSSStyleDeclaration>)
+      container.style.position = 'relative'
+      container.appendChild(hintEl)
+
+      onWheel = (e: WheelEvent) => {
+        if (e.ctrlKey || e.metaKey) {
+          e.preventDefault()
+          map.setZoom(map.getZoom() + (e.deltaY < 0 ? 1 : -1))
+        } else if (hintEl) {
+          hintEl.style.opacity = '1'
+          clearTimeout(hintTimer)
+          hintTimer = setTimeout(() => { if (hintEl) hintEl.style.opacity = '0' }, 1200)
+        }
+      }
+      container.addEventListener('wheel', onWheel, { passive: false })
     })
 
     return () => {
       cancelled = true
+      resizeObserver?.disconnect()
+      clearTimeout(hintTimer)
+      if (onWheel) container?.removeEventListener('wheel', onWheel)
       if (map) map.remove()
     }
   }, [collapsed, entries, categoryColours, zoom, centre, singlePin])
@@ -94,7 +150,7 @@ export default function DirectoryMap({ entries, categoryColours, zoom = 11, cent
           Hide map
         </button>
       )}
-      <div ref={containerRef} style={{ height: singlePin ? 240 : 420, width: '100%', borderRadius: 'var(--radius-lg)', overflow: 'hidden' }} />
+      <div ref={containerRef} style={{ height: singlePin ? 240 : 420, width: '100%', borderRadius: 'var(--radius-md)', overflow: 'hidden' }} />
     </div>
   )
 }

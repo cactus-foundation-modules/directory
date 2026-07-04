@@ -51,7 +51,7 @@ export default async function DirectoryEntryPage({ params }: Props) {
       {gallery.length > 0 && (
         gallery.length === 1 ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={gallery[0]} alt="" style={{ width: '100%', borderRadius: 'var(--radius-lg, 8px)', margin: '1rem 0' }} />
+          <img src={gallery[0]} alt="" style={{ width: '100%', borderRadius: 'var(--radius-md, 8px)', margin: '1rem 0' }} />
         ) : (
           <div className="dir-gallery">
             {gallery.map((url) => (

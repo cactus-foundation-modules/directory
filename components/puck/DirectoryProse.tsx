@@ -5,7 +5,8 @@ export type DirectoryProseProps = { content?: unknown; id?: string }
 
 // Shared render for editor canvas + RSC. The editor's richtext field turns
 // stored content into a React element for the canvas; the RSC path receives
-// raw TipTap JSON and converts it to HTML.
+// the raw stored value - an HTML string for editor-authored content, or
+// TipTap JSON for CSV-imported content - and renderProseHtml handles both.
 export function DirectoryProse(props: DirectoryProseProps) {
   const { content } = props
   if (!content) {
@@ -52,6 +53,6 @@ export const directoryProseFieldDef = {
 // anyway; this only avoids that hook running server-side.
 export const directoryProseRscFieldDef = {
   ...directoryProseFieldDef,
-  fields: { content: { type: 'textarea' as const, label: 'Content (TipTap JSON)' } },
+  fields: { content: { type: 'textarea' as const, label: 'Content (HTML or TipTap JSON)' } },
   render: DirectoryProseRsc,
 }

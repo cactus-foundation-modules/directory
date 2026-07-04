@@ -15,15 +15,16 @@ export default function DirectoryStyles() {
       .dir-prose ul, .dir-prose ol { margin: 0 0 1.25rem; padding-left: 1.5rem; }
 
       .dir-category-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
-      .dir-category-card { border: 1px solid var(--color-border); border-radius: var(--radius-lg, 8px); padding: 1.25rem; text-decoration: none; color: inherit; display: block; }
+      .dir-category-card { border: 1px solid var(--color-border); border-radius: var(--radius-md, 8px); padding: 1.25rem; text-decoration: none; color: inherit; display: block; }
       .dir-category-card .icon { font-size: 1.75rem; display: block; margin-bottom: 0.5rem; }
       .dir-category-card h3 { margin: 0 0 0.25rem; font-size: 1rem; }
       .dir-category-card p { margin: 0; font-size: 0.8125rem; color: var(--color-text-muted); }
 
       .dir-entry-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.5rem; }
-      .dir-entry-card { border: 1px solid var(--color-border); border-radius: var(--radius-lg, 8px); overflow: hidden; text-decoration: none; color: inherit; display: block; position: relative; }
+      .dir-entry-card { border: 1px solid var(--color-border); border-radius: var(--radius-md, 8px); overflow: hidden; text-decoration: none; color: inherit; display: block; position: relative; }
       .dir-entry-card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block; }
       .dir-entry-card-body { padding: 1rem; }
+      .dir-entry-card-body--badge-clear { padding-top: 2.75rem; }
       .dir-entry-card h3 { margin: 0 0 0.375rem; font-size: 1.0625rem; }
       .dir-entry-card p { margin: 0; font-size: 0.875rem; color: var(--color-text-muted); }
       .dir-entry-card-meta { display: flex; gap: 0.5rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-muted); flex-wrap: wrap; }

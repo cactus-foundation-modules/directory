@@ -11,7 +11,7 @@ export default function EntryCard({ entry, coverUrl, featuredLabel }: Props) {
         // eslint-disable-next-line @next/next/no-img-element
         <img src={coverUrl} alt="" />
       )}
-      <div className="dir-entry-card-body">
+      <div className={`dir-entry-card-body${!coverUrl && entry.featured ? ' dir-entry-card-body--badge-clear' : ''}`}>
         <h3>{entry.name}</h3>
         {entry.shortDescription && <p>{entry.shortDescription}</p>}
         <div className="dir-entry-card-meta">

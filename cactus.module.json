@@ -1,6 +1,6 @@
 {
   "name": "directory",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "tablePrefix": "dir_",
   "description": "Map-based listings with categories, featured entries, and a public directory.",
   "publicBasePath": "directory",

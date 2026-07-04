@@ -21,10 +21,14 @@ export const proseExtensions = [
   BulletList, OrderedList, ListItem,
 ]
 
-export function renderProseHtml(json: JSONContent): string {
-  if (!json) return ''
+// Puck's built-in richtext field stores rendered HTML strings (editor-authored
+// entries); buildProseDocument below stores raw TipTap JSON (CSV imports).
+// Handle both shapes here rather than assuming one.
+export function renderProseHtml(content: unknown): string {
+  if (!content) return ''
+  if (typeof content === 'string') return content
   try {
-    return generateHTML(json, proseExtensions)
+    return generateHTML(content as JSONContent, proseExtensions)
   } catch {
     return ''
   }
