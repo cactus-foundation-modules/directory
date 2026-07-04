@@ -136,11 +136,18 @@ export async function reorderCategories(ids: string[]): Promise<void> {
 // Entries - admin
 // ---------------------------------------------------------------------------
 
-const ENTRY_COLUMNS = Prisma.sql`
-  e."id", e."category_id", e."name", e."slug", e."short_description", e."status", e."featured", e."featured_until",
-  e."lat", e."lng", e."address", e."area", e."sub_area", e."route_marker", e."phone", e."email", e."website",
-  e."images", e."tags", e."created_at", e."updated_at", c."name" AS category_name, c."slug" AS category_slug
-`
+// Wrapped in a function (not built eagerly at module scope) because this file is
+// transitively imported by every Directory Puck block - including the client-safe
+// editor render path - and Prisma.sql throws immediately if evaluated in a
+// browser bundle. Deferring the tagged template to call time keeps it inert
+// until a server-side data-access function actually invokes it.
+function entryColumnsSql() {
+  return Prisma.sql`
+    e."id", e."category_id", e."name", e."slug", e."short_description", e."status", e."featured", e."featured_until",
+    e."lat", e."lng", e."address", e."area", e."sub_area", e."route_marker", e."phone", e."email", e."website",
+    e."images", e."tags", e."created_at", e."updated_at", c."name" AS category_name, c."slug" AS category_slug
+  `
+}
 
 export type ListEntriesFilter = {
   categoryId?: string
@@ -168,7 +175,7 @@ export async function listEntriesAdmin(opts: ListEntriesFilter): Promise<{ entri
 
   const [rows, countRows] = await Promise.all([
     prisma.$queryRaw<Record<string, unknown>[]>`
-      SELECT ${ENTRY_COLUMNS} FROM "dir_entries" e JOIN "dir_categories" c ON c."id" = e."category_id"
+      SELECT ${entryColumnsSql()} FROM "dir_entries" e JOIN "dir_categories" c ON c."id" = e."category_id"
       ${where} ORDER BY e."updated_at" DESC LIMIT ${perPage} OFFSET ${offset}
     `,
     prisma.$queryRaw<[{ count: bigint }]>`
@@ -352,7 +359,7 @@ export async function getPublishedEntries(opts: { page?: number; perPage?: numbe
 
   const [rows, countRows] = await Promise.all([
     prisma.$queryRaw<Record<string, unknown>[]>`
-      SELECT ${ENTRY_COLUMNS} FROM "dir_entries" e JOIN "dir_categories" c ON c."id" = e."category_id"
+      SELECT ${entryColumnsSql()} FROM "dir_entries" e JOIN "dir_categories" c ON c."id" = e."category_id"
       WHERE e."status" = 'published'
       ORDER BY (e."featured" AND (e."featured_until" IS NULL OR e."featured_until" > NOW())) DESC, e."created_at" DESC
       LIMIT ${perPage} OFFSET ${offset}
@@ -376,7 +383,7 @@ export async function getPublishedEntriesForCategory(categoryId: string, opts: {
     Prisma.sql`e."created_at" DESC`
 
   const rows = await prisma.$queryRaw<Record<string, unknown>[]>`
-    SELECT ${ENTRY_COLUMNS} FROM "dir_entries" e JOIN "dir_categories" c ON c."id" = e."category_id"
+    SELECT ${entryColumnsSql()} FROM "dir_entries" e JOIN "dir_categories" c ON c."id" = e."category_id"
     ${where}
     ORDER BY (e."featured" AND (e."featured_until" IS NULL OR e."featured_until" > NOW())) DESC, ${orderBy}
   `
