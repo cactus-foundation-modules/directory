@@ -176,9 +176,29 @@ export default function EntryEditor({ entry, categories }: Props) {
   }
 
   return (
-    <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'flex-start', flexWrap: 'wrap' }}>
-      <div style={{ flex: '2 1 480px', minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-        <div className="card" style={{ padding: '1rem' }}>
+    <div>
+      <div className="page-header">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <h1 className="page-title">{entry?.name || 'New entry'}</h1>
+          <span className={`badge ${status === 'published' ? 'badge-success' : 'badge-muted'}`}>{status === 'published' ? 'Published' : 'Draft'}</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+          {status === 'draft' && id && (
+            <button type="button" className="btn btn-ghost btn-sm" onClick={copyPreviewLink}>Copy preview link</button>
+          )}
+          {id && (
+            <button type="button" className="btn btn-ghost btn-sm" onClick={duplicate}>Duplicate</button>
+          )}
+          <button type="button" className="btn btn-secondary btn-sm" onClick={() => save('draft')} disabled={saving}>Save Draft</button>
+          <button type="button" className="btn btn-primary btn-sm" onClick={() => save('published')} disabled={saving}>Publish</button>
+        </div>
+      </div>
+
+      {error && <div className="alert alert-danger" style={{ marginBottom: '1rem', fontSize: '0.8125rem' }}>{error}</div>}
+      {previewUrl && <div style={{ marginBottom: '1rem', fontSize: '0.75rem', color: 'var(--color-text-muted)', wordBreak: 'break-all' }}>{previewUrl}</div>}
+
+      <div className="directory-entry-grid-container directory-entry-layout">
+        <div className="card de-core" style={{ padding: '1rem' }}>
           <h3 style={{ margin: '0 0 0.75rem', fontSize: '0.9375rem' }}>Core</h3>
           <div style={{ marginBottom: '0.75rem' }}>
             <label style={labelStyle}>Name</label>
@@ -206,7 +226,49 @@ export default function EntryEditor({ entry, categories }: Props) {
           )}
         </div>
 
-        <div className="card" style={{ padding: '1rem' }}>
+        <div className="card de-contact" style={{ padding: '1rem' }}>
+          <h3 style={{ margin: '0 0 0.75rem', fontSize: '0.9375rem' }}>Contact</h3>
+          <div style={{ marginBottom: '0.75rem' }}>
+            <label style={labelStyle}>Phone</label>
+            <input style={inputStyle} value={phone} onChange={(e) => setPhone(e.target.value)} />
+          </div>
+          <div style={{ marginBottom: '0.75rem' }}>
+            <label style={labelStyle}>Email</label>
+            <input style={inputStyle} type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+          </div>
+          <div>
+            <label style={labelStyle}>Website</label>
+            <input style={inputStyle} value={website} onChange={(e) => setWebsite(e.target.value)} placeholder="https://…" />
+          </div>
+        </div>
+
+        <div className="card de-tags" style={{ padding: '1rem' }}>
+          <h3 style={{ margin: '0 0 0.75rem', fontSize: '0.9375rem' }}>Tags</h3>
+          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '0.5rem' }}>
+            {tags.map((tag) => (
+              <span key={tag} className="badge badge-gray" style={{ display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
+                {tag}
+                <button type="button" onClick={() => removeTag(tag)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit', lineHeight: 1 }}>×</button>
+              </span>
+            ))}
+          </div>
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <input
+              style={inputStyle}
+              list="directory-tag-suggestions"
+              value={tagInput}
+              onChange={(e) => setTagInput(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); addTag() } }}
+              placeholder="Add a tag…"
+            />
+            <datalist id="directory-tag-suggestions">
+              {allTags.map((t) => <option key={t} value={t} />)}
+            </datalist>
+            <button type="button" className="btn btn-secondary btn-sm" onClick={addTag}>Add</button>
+          </div>
+        </div>
+
+        <div className="card de-content" style={{ padding: '1rem' }}>
           <h3 style={{ margin: '0 0 0.75rem', fontSize: '0.9375rem' }}>Content</h3>
           <div style={{ marginBottom: '0.75rem' }}>
             <label style={labelStyle}>Short description</label>
@@ -230,7 +292,7 @@ export default function EntryEditor({ entry, categories }: Props) {
           </div>
         </div>
 
-        <div className="card" style={{ padding: '1rem' }}>
+        <div className="card de-location" style={{ minWidth: 0, padding: '1rem' }}>
           <h3 style={{ margin: '0 0 0.75rem', fontSize: '0.9375rem' }}>Location</h3>
           <div style={{ marginBottom: '0.75rem' }}>
             <label style={labelStyle}>Address</label>
@@ -268,74 +330,9 @@ export default function EntryEditor({ entry, categories }: Props) {
           </div>
         </div>
 
-        <div className="card" style={{ padding: '1rem' }}>
-          <h3 style={{ margin: '0 0 0.75rem', fontSize: '0.9375rem' }}>Contact</h3>
-          <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-            <div style={{ flex: '1 1 160px' }}>
-              <label style={labelStyle}>Phone</label>
-              <input style={inputStyle} value={phone} onChange={(e) => setPhone(e.target.value)} />
-            </div>
-            <div style={{ flex: '1 1 200px' }}>
-              <label style={labelStyle}>Email</label>
-              <input style={inputStyle} type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-            </div>
-            <div style={{ flex: '1 1 200px' }}>
-              <label style={labelStyle}>Website</label>
-              <input style={inputStyle} value={website} onChange={(e) => setWebsite(e.target.value)} placeholder="https://…" />
-            </div>
-          </div>
-        </div>
-
-        <div className="card" style={{ padding: '1rem' }}>
+        <div className="card de-media" style={{ padding: '1rem' }}>
           <h3 style={{ margin: '0 0 0.75rem', fontSize: '0.9375rem' }}>Media</h3>
           <EntryImagesField value={images} onChange={setImages} />
-        </div>
-
-        <div className="card" style={{ padding: '1rem' }}>
-          <h3 style={{ margin: '0 0 0.75rem', fontSize: '0.9375rem' }}>Tags</h3>
-          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '0.5rem' }}>
-            {tags.map((tag) => (
-              <span key={tag} className="badge badge-gray" style={{ display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
-                {tag}
-                <button type="button" onClick={() => removeTag(tag)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit', lineHeight: 1 }}>×</button>
-              </span>
-            ))}
-          </div>
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <input
-              style={inputStyle}
-              list="directory-tag-suggestions"
-              value={tagInput}
-              onChange={(e) => setTagInput(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); addTag() } }}
-              placeholder="Add a tag…"
-            />
-            <datalist id="directory-tag-suggestions">
-              {allTags.map((t) => <option key={t} value={t} />)}
-            </datalist>
-            <button type="button" className="btn btn-secondary btn-sm" onClick={addTag}>Add</button>
-          </div>
-        </div>
-      </div>
-
-      <div style={{ flex: '1 1 260px', maxWidth: 320, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        <div className="card" style={{ padding: '1rem' }}>
-          <h3 style={{ margin: '0 0 0.75rem', fontSize: '0.9375rem' }}>Publish</h3>
-          <div style={{ marginBottom: '0.75rem' }}>
-            <span className={`badge ${status === 'published' ? 'badge-success' : 'badge-muted'}`}>{status === 'published' ? 'Published' : 'Draft'}</span>
-          </div>
-          {error && <div className="alert alert-danger" style={{ marginBottom: '0.75rem', fontSize: '0.8125rem' }}>{error}</div>}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            <button type="button" className="btn btn-secondary btn-sm" onClick={() => save('draft')} disabled={saving}>Save Draft</button>
-            <button type="button" className="btn btn-primary btn-sm" onClick={() => save('published')} disabled={saving}>Publish</button>
-            {status === 'draft' && id && (
-              <button type="button" className="btn btn-ghost btn-sm" onClick={copyPreviewLink}>Copy preview link</button>
-            )}
-            {previewUrl && <div style={{ fontSize: '0.6875rem', color: 'var(--color-text-muted)', wordBreak: 'break-all' }}>{previewUrl}</div>}
-            {id && (
-              <button type="button" className="btn btn-ghost btn-sm" onClick={duplicate}>Duplicate</button>
-            )}
-          </div>
         </div>
       </div>
 

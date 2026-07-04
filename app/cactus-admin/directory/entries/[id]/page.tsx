@@ -24,7 +24,6 @@ export default async function DirectoryEntryPage({ params }: Props) {
     return (
       <div>
         <DirectoryNav />
-        <div className="page-header"><h1 className="page-title">New entry</h1></div>
         <EntryEditor entry={null} categories={categories} />
       </div>
     )
@@ -36,7 +35,6 @@ export default async function DirectoryEntryPage({ params }: Props) {
   return (
     <div>
       <DirectoryNav />
-      <div className="page-header"><h1 className="page-title">{entry.name}</h1></div>
       <EntryEditor entry={entry} categories={categories} />
     </div>
   )
