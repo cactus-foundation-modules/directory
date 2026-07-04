@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Puck } from '@puckeditor/core'
 import type { Data } from '@puckeditor/core'
@@ -118,7 +118,10 @@ export default function EntryEditor({ entry, categories }: Props) {
     }
   }
 
-  const save = useCallback(async (nextStatus: 'draft' | 'published') => {
+  const save = async (nextStatus: 'draft' | 'published') => {
+    if (!name.trim()) { setError('Name is required'); return }
+    if (!categoryId) { setError('Category is required - create a category first'); return }
+
     setSaving(true)
     setError(null)
     const payload = { ...buildPayload(), status: nextStatus }
@@ -152,8 +155,7 @@ export default function EntryEditor({ entry, categories }: Props) {
     } finally {
       setSaving(false)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- buildPayload reads latest state via closure each call
-  }, [id, base, router, dirtyRef])
+  }
 
   async function duplicate() {
     if (!id) return

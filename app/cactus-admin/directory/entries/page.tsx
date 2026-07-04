@@ -17,7 +17,7 @@ export default async function DirectoryEntriesPage() {
     <div>
       <DirectoryNav />
       <div className="page-header">
-        <h1 className="page-title">Entries</h1>
+        <h1 className="page-title">Directory</h1>
       </div>
       <EntriesScreen />
     </div>

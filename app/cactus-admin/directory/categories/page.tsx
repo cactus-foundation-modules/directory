@@ -17,7 +17,7 @@ export default async function DirectoryCategoriesPage() {
     <div>
       <DirectoryNav />
       <div className="page-header">
-        <h1 className="page-title">Categories</h1>
+        <h1 className="page-title">Directory</h1>
       </div>
       <CategoriesScreen />
     </div>
