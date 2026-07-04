@@ -1,6 +1,6 @@
 {
   "name": "cactus-module-directory",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Directory module for Cactus",
   "license": "MIT",
   "private": true

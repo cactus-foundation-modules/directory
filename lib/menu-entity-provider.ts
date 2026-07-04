@@ -4,6 +4,7 @@ import type { MenuEntityKind, MenuEntitySearchResult, MenuEntityProvider, Resolv
 // Contributes to the "core.menu-entity-provider" extension point so the admin
 // menu builder can link to Directory content.
 const KINDS: MenuEntityKind[] = [
+  { id: 'home', label: 'Directory home page' },
   { id: 'category', label: 'Directory category' },
   { id: 'listing', label: 'Directory listing' },
 ]
@@ -14,6 +15,9 @@ function listKinds(): MenuEntityKind[] {
 
 async function searchEntities(kind: string, query: string): Promise<MenuEntitySearchResult[]> {
   const q = `%${query}%`
+  if (kind === 'home') {
+    return [{ id: 'home', label: 'Directory home page' }]
+  }
   if (kind === 'category') {
     const rows = await prisma.$queryRaw<Array<{ id: string; name: string }>>`
       SELECT "id", "name" FROM "dir_categories" WHERE "name" ILIKE ${q} ORDER BY "display_order" ASC LIMIT 20
@@ -32,6 +36,9 @@ async function searchEntities(kind: string, query: string): Promise<MenuEntitySe
 }
 
 async function resolveEntity(kind: string, id: string): Promise<ResolvedMenuEntity | null> {
+  if (kind === 'home') {
+    return { label: 'Directory', href: '/directory', publiclyVisible: true }
+  }
   if (kind === 'category') {
     const rows = await prisma.$queryRaw<Array<{ name: string; slug: string }>>`SELECT "name", "slug" FROM "dir_categories" WHERE "id" = ${id} LIMIT 1`
     if (!rows[0]) return null
