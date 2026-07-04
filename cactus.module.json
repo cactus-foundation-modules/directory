@@ -1,6 +1,6 @@
 {
   "name": "directory",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "tablePrefix": "dir_",
   "description": "Map-based listings with categories, featured entries, and a public directory.",
   "publicBasePath": "directory",
@@ -20,7 +20,8 @@
     { "id": "directory", "label": "Directory", "permission": "directory.manage", "import": "./components/admin/DirectorySettingsTab", "component": "DirectorySettingsTab" }
   ],
   "extensionPoints": [
-    { "point": "core.admin-dashboard-widgets", "id": "directory-summary", "permission": "directory.access", "import": "./components/admin/DashboardWidget", "component": "directoryDashboardWidget" }
+    { "point": "core.admin-dashboard-widgets", "id": "directory-summary", "permission": "directory.access", "import": "./components/admin/DashboardWidget", "component": "directoryDashboardWidget" },
+    { "point": "core.menu-entity-provider", "id": "directory", "import": "./lib/menu-entity-provider", "component": "directoryMenuEntityProvider" }
   ],
   "requiresModules": []
 }
