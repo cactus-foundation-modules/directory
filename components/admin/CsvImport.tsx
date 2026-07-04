@@ -1,6 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
+import { useAdminPath } from '@/components/admin/AdminPathContext'
 import { parseCsv, serialiseCsv, rowsToObjects } from '@/modules/directory/lib/csv'
 
 const EXPECTED_COLUMNS = ['name', 'category_slug', 'lat', 'lng', 'short_description', 'description', 'address', 'area', 'sub_area', 'route_marker', 'phone', 'email', 'website', 'tags', 'featured_until']
@@ -47,9 +49,11 @@ function validateRows(objects: Array<Record<string, string>>, categorySlugs: Set
 }
 
 export default function CsvImport({ categorySlugs }: { categorySlugs: string[] }) {
+  const adminPath = useAdminPath()
   const [rows, setRows] = useState<ParsedRow[] | null>(null)
   const [importing, setImporting] = useState(false)
   const [result, setResult] = useState<{ imported: number; errors: Array<{ row: number; error: string }> } | null>(null)
+  const [dragOver, setDragOver] = useState(false)
 
   const categorySlugSet = new Set(categorySlugs)
 
@@ -63,6 +67,26 @@ export default function CsvImport({ categorySlugs }: { categorySlugs: string[] }
       setResult(null)
     }
     reader.readAsText(file)
+  }
+
+  function reset() {
+    setRows(null)
+    setResult(null)
+  }
+
+  function downloadTemplate() {
+    const exampleRow = [
+      'The Old Mill Café', categorySlugs[0] ?? 'food-drink', '51.505000', '-0.090000',
+      'Cosy café by the river', 'Full description goes here.', '1 High Street', 'Riverside', '',
+      '', '01234 567890', 'hello@example.com', 'https://example.com', 'dog-friendly|wifi', '',
+    ]
+    const blob = new Blob([serialiseCsv([EXPECTED_COLUMNS, exampleRow])], { type: 'text/csv' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'directory-import-template.csv'
+    a.click()
+    URL.revokeObjectURL(url)
   }
 
   const readyRows = rows?.filter((r) => r.errors.length === 0) ?? []
@@ -119,7 +143,37 @@ export default function CsvImport({ categorySlugs }: { categorySlugs: string[] }
         Separate multiple <code>tags</code> with a pipe (|). Everything imports as a draft.
       </p>
 
-      <input type="file" accept=".csv,text/csv" onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])} />
+      <button type="button" className="btn btn-ghost btn-sm" style={{ marginBottom: '1rem' }} onClick={downloadTemplate}>
+        Download example CSV
+      </button>
+
+      {!rows && (
+        <label
+          onDragOver={(e) => { e.preventDefault(); setDragOver(true) }}
+          onDragLeave={() => setDragOver(false)}
+          onDrop={(e) => {
+            e.preventDefault()
+            setDragOver(false)
+            const file = e.dataTransfer.files?.[0]
+            if (file) handleFile(file)
+          }}
+          style={{
+            position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
+            border: `2px dashed ${dragOver ? 'var(--color-primary)' : 'var(--color-border)'}`, borderRadius: 'var(--radius-md, 8px)',
+            padding: '2.5rem 1.5rem', cursor: 'pointer', textAlign: 'center',
+            background: dragOver ? 'var(--color-bg-subtle)' : 'transparent',
+          }}
+        >
+          <span style={{ fontSize: '0.9375rem' }}>Drop a CSV file here, or click to choose one</span>
+          <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>.csv files only</span>
+          <input
+            type="file"
+            accept=".csv,text/csv"
+            onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])}
+            style={{ position: 'absolute', width: 1, height: 1, opacity: 0, overflow: 'hidden' }}
+          />
+        </label>
+      )}
 
       {rows && !result && (
         <div style={{ marginTop: '1rem' }}>
@@ -152,14 +206,21 @@ export default function CsvImport({ categorySlugs }: { categorySlugs: string[] }
             {errorRows.length > 0 && (
               <button className="btn btn-secondary btn-sm" onClick={downloadErrorReport}>Download error report</button>
             )}
+            <button className="btn btn-ghost btn-sm" disabled={importing} onClick={reset}>Choose another file</button>
           </div>
         </div>
       )}
 
       {result && (
         <div className="alert alert-success" style={{ marginTop: '1rem' }}>
-          Imported {result.imported} {result.imported === 1 ? 'entry' : 'entries'} as drafts.
-          {result.errors.length > 0 && ` ${result.errors.length} rows were skipped.`}
+          <p style={{ margin: '0 0 0.75rem' }}>
+            Imported {result.imported} {result.imported === 1 ? 'entry' : 'entries'} as drafts.
+            {result.errors.length > 0 && ` ${result.errors.length} rows were skipped.`}
+          </p>
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <Link href={`/${adminPath}/m/directory/entries`} className="btn btn-primary btn-sm">View entries</Link>
+            <button className="btn btn-secondary btn-sm" onClick={reset}>Import another file</button>
+          </div>
         </div>
       )}
     </div>

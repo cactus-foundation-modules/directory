@@ -9,6 +9,7 @@ import { useAdminPath } from '@/components/admin/AdminPathContext'
 import { useUnsavedChanges } from '@/components/admin/useUnsavedChanges'
 import { UnsavedChangesModal } from '@/components/admin/UnsavedChangesModal'
 import { descriptionEditorConfig } from '@/modules/directory/components/puck/descriptionEditorConfig'
+import DirectoryNav from './DirectoryNav'
 import EntryImagesField from './EntryImagesField'
 import GeocodeLookup from './GeocodeLookup'
 import EntryMapPreview from './EntryMapPreview'
@@ -60,8 +61,11 @@ export default function EntryEditor({ entry, categories }: Props) {
   const [allTags, setAllTags] = useState<string[]>([])
 
   const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  const [previewCopied, setPreviewCopied] = useState(false)
+  const errorRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     fetch('/api/m/directory/admin/entries/tags').then((r) => r.json()).then((d) => setAllTags(d.tags ?? []))
@@ -119,11 +123,12 @@ export default function EntryEditor({ entry, categories }: Props) {
   }
 
   const save = async (nextStatus: 'draft' | 'published') => {
-    if (!name.trim()) { setError('Name is required'); return }
-    if (!categoryId) { setError('Category is required - create a category first'); return }
+    if (!name.trim()) { setError('Name is required'); setTimeout(() => errorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 0); return }
+    if (!categoryId) { setError('Category is required - create a category first'); setTimeout(() => errorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 0); return }
 
     setSaving(true)
     setError(null)
+    setSaved(false)
     const payload = { ...buildPayload(), status: nextStatus }
 
     try {
@@ -134,11 +139,13 @@ export default function EntryEditor({ entry, categories }: Props) {
           body: JSON.stringify(payload),
         })
         const data = await res.json()
-        if (!res.ok) { setError(data?.error ?? 'Could not create entry'); return }
+        if (!res.ok) { setError(data?.error ?? 'Could not create entry'); setTimeout(() => errorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 0); return }
         setId(data.id)
         setSlug(data.slug)
         setStatus(nextStatus)
         dirtyRef.current = false
+        setSaved(true)
+        setTimeout(() => setSaved(false), 2000)
         router.replace(`${base}/${data.id}`)
       } else {
         const res = await fetch(`/api/m/directory/admin/entries/${id}`, {
@@ -147,10 +154,12 @@ export default function EntryEditor({ entry, categories }: Props) {
           body: JSON.stringify(payload),
         })
         const data = await res.json()
-        if (!res.ok) { setError(data?.error ?? 'Could not save entry'); return }
+        if (!res.ok) { setError(data?.error ?? 'Could not save entry'); setTimeout(() => errorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 0); return }
         setSlug(data.slug)
         setStatus(nextStatus)
         dirtyRef.current = false
+        setSaved(true)
+        setTimeout(() => setSaved(false), 2000)
       }
     } finally {
       setSaving(false)
@@ -171,9 +180,16 @@ export default function EntryEditor({ entry, categories }: Props) {
     if (data?.token) {
       const fullUrl = `${window.location.origin}/directory/preview/${data.token}`
       setPreviewUrl(fullUrl)
-      try { await navigator.clipboard.writeText(fullUrl) } catch { /* clipboard unavailable */ }
+      try {
+        await navigator.clipboard.writeText(fullUrl)
+        setPreviewCopied(true)
+        setTimeout(() => setPreviewCopied(false), 2000)
+      } catch { /* clipboard unavailable */ }
     }
   }
+
+  const currentCategorySlug = categories.find((c) => c.id === categoryId)?.slug
+  const liveUrl = status === 'published' && id && currentCategorySlug && slug ? `/directory/${currentCategorySlug}/${slug}` : null
 
   return (
     <div>
@@ -183,8 +199,12 @@ export default function EntryEditor({ entry, categories }: Props) {
           <span className={`badge ${status === 'published' ? 'badge-success' : 'badge-muted'}`}>{status === 'published' ? 'Published' : 'Draft'}</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+          {saved && <span style={{ fontSize: '0.8125rem', color: 'var(--color-success, var(--color-primary))' }}>Saved ✓</span>}
+          {liveUrl && (
+            <a href={liveUrl} target="_blank" rel="noopener" className="btn btn-ghost btn-sm">View live ↗</a>
+          )}
           {status === 'draft' && id && (
-            <button type="button" className="btn btn-ghost btn-sm" onClick={copyPreviewLink}>Copy preview link</button>
+            <button type="button" className="btn btn-ghost btn-sm" onClick={copyPreviewLink}>{previewCopied ? 'Link copied ✓' : 'Copy preview link'}</button>
           )}
           {id && (
             <button type="button" className="btn btn-ghost btn-sm" onClick={duplicate}>Duplicate</button>
@@ -194,7 +214,9 @@ export default function EntryEditor({ entry, categories }: Props) {
         </div>
       </div>
 
-      {error && <div className="alert alert-danger" style={{ marginBottom: '1rem', fontSize: '0.8125rem' }}>{error}</div>}
+      <DirectoryNav />
+
+      {error && <div ref={errorRef} className="alert alert-danger" style={{ marginBottom: '1rem', fontSize: '0.8125rem' }}>{error}</div>}
       {previewUrl && <div style={{ marginBottom: '1rem', fontSize: '0.75rem', color: 'var(--color-text-muted)', wordBreak: 'break-all' }}>{previewUrl}</div>}
 
       <div className="directory-entry-grid-container directory-entry-layout">

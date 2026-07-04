@@ -6,6 +6,13 @@ export default function DirectoryStyles() {
       .dir-container { max-width: 720px; margin: 0 auto; padding: 2rem 1.5rem; }
       .dir-wide { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem; }
 
+      .dir-breadcrumb { display: flex; flex-wrap: wrap; align-items: center; gap: 0.375rem; font-size: 0.8125rem; color: var(--color-text-muted); margin-bottom: 1rem; }
+      .dir-breadcrumb a { color: var(--color-text-muted); text-decoration: none; }
+      .dir-breadcrumb a:hover { color: var(--color-primary); text-decoration: underline; }
+
+      .dir-section-heading { font-size: 1.125rem; font-weight: 700; margin: 0 0 1rem; }
+      .dir-result-count { font-size: 0.8125rem; color: var(--color-text-muted); margin: 0 0 1.25rem; }
+
       .dir-prose { line-height: 1.75; color: var(--color-text); font-size: 1.0625rem; }
       .dir-prose p { margin: 0 0 1.25rem; }
       .dir-prose h2 { font-size: 1.5rem; font-weight: 700; margin: 2rem 0 1rem; }

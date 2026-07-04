@@ -57,11 +57,15 @@ export default async function DirectoryIndexPage({ searchParams }: Props) {
       {entries.length === 0 ? (
         <p style={{ color: 'var(--color-text-muted)' }}>Nothing listed yet.</p>
       ) : (
-        <div className="dir-entry-grid">
-          {entries.map((entry) => (
-            <EntryCard key={entry.id} entry={entry} coverUrl={coverUrls.get(entry.images[0] ?? '') ?? null} featuredLabel={settings.featuredLabel} />
-          ))}
-        </div>
+        <>
+          <h2 className="dir-section-heading">All listings</h2>
+          <p className="dir-result-count">{total} {total === 1 ? 'listing' : 'listings'}</p>
+          <div className="dir-entry-grid">
+            {entries.map((entry) => (
+              <EntryCard key={entry.id} entry={entry} coverUrl={coverUrls.get(entry.images[0] ?? '') ?? null} featuredLabel={settings.featuredLabel} />
+            ))}
+          </div>
+        </>
       )}
 
       {totalPages > 1 && (

@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useAdminPath } from '@/components/admin/AdminPathContext'
 import type { DirectoryCategoryWithCount } from '@/modules/directory/lib/types'
 import type { DirectoryEntryListItem } from '@/modules/directory/lib/types'
@@ -15,6 +15,7 @@ function statusBadge(status: string) {
 
 export default function EntriesScreen() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const adminPath = useAdminPath()
   const base = `/${adminPath}/m/directory/entries`
 
@@ -27,12 +28,24 @@ export default function EntriesScreen() {
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [busy, setBusy] = useState(false)
 
-  const [category, setCategory] = useState('')
+  const [category, setCategory] = useState(() => searchParams.get('category') ?? '')
   const [status, setStatus] = useState('')
   const [featured, setFeatured] = useState('')
   const [missingLocation, setMissingLocation] = useState(false)
   const [q, setQ] = useState('')
   const [debouncedQ, setDebouncedQ] = useState('')
+
+  const hasFilters = !!(category || status || featured || missingLocation || q)
+
+  function clearFilters() {
+    setCategory('')
+    setStatus('')
+    setFeatured('')
+    setMissingLocation(false)
+    setQ('')
+    setDebouncedQ('')
+    setPage(1)
+  }
 
   useEffect(() => {
     const t = setTimeout(() => { setDebouncedQ(q); setPage(1) }, 300)
@@ -143,12 +156,21 @@ export default function EntriesScreen() {
             Missing location
           </label>
           <input style={inputStyle} placeholder="Search name or area…" value={q} onChange={(e) => setQ(e.target.value)} />
+          {hasFilters && (
+            <button type="button" className="btn btn-ghost btn-sm" onClick={clearFilters}>Clear filters</button>
+          )}
         </div>
         <div style={{ display: 'flex', gap: '0.5rem' }}>
           <Link href={`${base}/import`} className="btn btn-secondary btn-sm">Import CSV</Link>
           <Link href={`${base}/new`} className="btn btn-primary btn-sm">New entry</Link>
         </div>
       </div>
+
+      {!loading && (
+        <p style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)', margin: '-0.5rem 0 1rem' }}>
+          {total} {total === 1 ? 'entry' : 'entries'}{hasFilters ? ' matching these filters' : ''}
+        </p>
+      )}
 
       {selected.size > 0 && (
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginBottom: '0.75rem', padding: '0.5rem 0.75rem', background: 'var(--color-surface-alt)', borderRadius: '0.375rem' }}>
@@ -159,9 +181,45 @@ export default function EntriesScreen() {
         </div>
       )}
 
-      {!loading && entries.length === 0 ? (
+      {loading ? (
+        <div className="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th style={{ width: '2rem' }}></th>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Area</th>
+                <th>Status</th>
+                <th>Featured</th>
+                <th>Created</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {Array.from({ length: 6 }).map((_, i) => (
+                <tr key={i}>
+                  <td colSpan={8} style={{ padding: '0.625rem 0.75rem' }}>
+                    <div className="skeleton" style={{ height: '1.25rem', width: '100%' }} />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : entries.length === 0 ? (
         <div className="card" style={{ textAlign: 'center', color: 'var(--color-text-muted)', padding: '3rem' }}>
-          No entries match these filters.
+          {hasFilters ? (
+            <>
+              <p style={{ margin: '0 0 0.75rem' }}>No entries match these filters.</p>
+              <button type="button" className="btn btn-secondary btn-sm" onClick={clearFilters}>Clear filters</button>
+            </>
+          ) : (
+            <>
+              <p style={{ margin: '0 0 0.75rem' }}>No entries yet.</p>
+              <Link href={`${base}/new`} className="btn btn-primary btn-sm">New entry</Link>
+            </>
+          )}
         </div>
       ) : (
         <div className="table-wrapper">
@@ -181,26 +239,34 @@ export default function EntriesScreen() {
               </tr>
             </thead>
             <tbody>
-              {entries.map((e) => (
-                <tr key={e.id}>
-                  <td onClick={(ev) => ev.stopPropagation()}>
-                    <input type="checkbox" checked={selected.has(e.id)} onChange={() => toggleOne(e.id)} style={{ width: '1.125rem', height: '1.125rem', cursor: 'pointer' }} />
-                  </td>
-                  <td><Link href={`${base}/${e.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>{e.name}</Link></td>
-                  <td style={{ fontSize: '0.8125rem' }}>{e.categoryName}</td>
-                  <td style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)' }}>{e.area ?? '—'}</td>
-                  <td>{statusBadge(e.status)}</td>
-                  <td>{e.featured ? <span className="badge badge-primary">Featured</span> : '—'}</td>
-                  <td style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)', whiteSpace: 'nowrap' }}>{new Date(e.createdAt).toLocaleDateString('en-GB')}</td>
-                  <td onClick={(ev) => ev.stopPropagation()}>
-                    <div style={{ display: 'flex', gap: '0.25rem', justifyContent: 'flex-end' }}>
-                      <Link href={`${base}/${e.id}`} className="btn btn-ghost btn-sm">Edit</Link>
-                      <button type="button" className="btn btn-ghost btn-sm" onClick={() => rowDuplicate(e.id)}>Duplicate</button>
-                      <button type="button" className="btn btn-ghost btn-sm" onClick={() => rowDelete(e.id)}>Delete</button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+              {entries.map((e) => {
+                const missingLoc = e.lat === null || e.lng === null
+                return (
+                  <tr key={e.id} onClick={() => router.push(`${base}/${e.id}`)} style={{ cursor: 'pointer' }}>
+                    <td onClick={(ev) => ev.stopPropagation()}>
+                      <input type="checkbox" checked={selected.has(e.id)} onChange={() => toggleOne(e.id)} style={{ width: '1.125rem', height: '1.125rem', cursor: 'pointer' }} />
+                    </td>
+                    <td>{e.name}</td>
+                    <td style={{ fontSize: '0.8125rem' }}>{e.categoryName}</td>
+                    <td style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)' }}>
+                      {e.area ?? '—'}
+                      {missingLoc && (
+                        <span title="No coordinates set" style={{ marginLeft: '0.375rem' }}>⚠️</span>
+                      )}
+                    </td>
+                    <td>{statusBadge(e.status)}</td>
+                    <td>{e.featured ? <span className="badge badge-primary">Featured</span> : '—'}</td>
+                    <td style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)', whiteSpace: 'nowrap' }}>{new Date(e.createdAt).toLocaleDateString('en-GB')}</td>
+                    <td onClick={(ev) => ev.stopPropagation()}>
+                      <div style={{ display: 'flex', gap: '0.25rem', justifyContent: 'flex-end' }}>
+                        <Link href={`${base}/${e.id}`} className="btn btn-ghost btn-sm">Edit</Link>
+                        <button type="button" className="btn btn-ghost btn-sm" onClick={() => rowDuplicate(e.id)}>Duplicate</button>
+                        <button type="button" className="btn btn-ghost btn-sm" onClick={() => rowDelete(e.id)}>Delete</button>
+                      </div>
+                    </td>
+                  </tr>
+                )
+              })}
             </tbody>
           </table>
         </div>

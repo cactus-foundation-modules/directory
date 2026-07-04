@@ -1,6 +1,8 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
+import Link from 'next/link'
+import { useAdminPath } from '@/components/admin/AdminPathContext'
 import type { DirectoryCategoryWithCount } from '@/modules/directory/lib/types'
 
 const inputStyle = { padding: '0.375rem 0.625rem', border: '1px solid var(--color-border)', borderRadius: 6, background: 'var(--color-bg)', color: 'var(--color-text)' }
@@ -30,10 +32,12 @@ function EditRow({ category, onSave, onCancel }: {
 }
 
 export default function CategoriesScreen() {
+  const adminPath = useAdminPath()
   const [categories, setCategories] = useState<DirectoryCategoryWithCount[]>([])
   const [loading, setLoading] = useState(true)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [dragIndex, setDragIndex] = useState<number | null>(null)
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
 
   const [newName, setNewName] = useState('')
   const [newIcon, setNewIcon] = useState('')
@@ -84,14 +88,8 @@ export default function CategoriesScreen() {
     load()
   }
 
-  function onDrop(index: number) {
-    if (dragIndex === null || dragIndex === index) return
-    const next = [...categories]
-    const [moved] = next.splice(dragIndex, 1)
-    if (!moved) return
-    next.splice(index, 0, moved)
+  function persistOrder(next: DirectoryCategoryWithCount[]) {
     setCategories(next)
-    setDragIndex(null)
     fetch('/api/m/directory/admin/categories/reorder', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
@@ -99,7 +97,42 @@ export default function CategoriesScreen() {
     })
   }
 
-  if (loading) return null
+  function onDrop(index: number) {
+    setDragOverIndex(null)
+    if (dragIndex === null || dragIndex === index) { setDragIndex(null); return }
+    const next = [...categories]
+    const [moved] = next.splice(dragIndex, 1)
+    if (!moved) return
+    next.splice(index, 0, moved)
+    setDragIndex(null)
+    persistOrder(next)
+  }
+
+  function move(index: number, direction: -1 | 1) {
+    const target = index + direction
+    if (target < 0 || target >= categories.length) return
+    const next = [...categories]
+    const temp = next[index]!
+    next[index] = next[target]!
+    next[target] = temp
+    persistOrder(next)
+  }
+
+  if (loading) {
+    return (
+      <div className="table-wrapper">
+        <table className="table">
+          <tbody>
+            {Array.from({ length: 4 }).map((_, i) => (
+              <tr key={i}>
+                <td style={{ padding: '0.625rem 0.75rem' }}><div className="skeleton" style={{ height: '1.25rem', width: '100%' }} /></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )
+  }
 
   return (
     <div>
@@ -111,6 +144,12 @@ export default function CategoriesScreen() {
           <button className="btn btn-primary btn-sm" onClick={addCategory}>Add</button>
         </div>
       </div>
+
+      {categories.length > 0 && (
+        <p style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', margin: '0 0 0.5rem' }}>
+          Drag rows, or use the arrows, to change the order categories appear on the public directory.
+        </p>
+      )}
 
       <div className="table-wrapper">
         <table className="table">
@@ -132,18 +171,34 @@ export default function CategoriesScreen() {
                   key={category.id}
                   draggable
                   onDragStart={() => setDragIndex(index)}
-                  onDragOver={(e) => e.preventDefault()}
+                  onDragOver={(e) => { e.preventDefault(); setDragOverIndex(index) }}
                   onDrop={() => onDrop(index)}
-                  style={{ cursor: 'grab' }}
+                  onDragEnd={() => { setDragIndex(null); setDragOverIndex(null) }}
+                  style={{
+                    cursor: 'grab',
+                    opacity: dragIndex === index ? 0.4 : 1,
+                    background: dragOverIndex === index && dragIndex !== index ? 'var(--color-success-subtle)' : undefined,
+                  }}
                 >
                   <td style={{ fontSize: '1.1rem' }}>{category.icon}</td>
                   <td>
                     <div>{category.name}</div>
                     {category.description && <div style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-muted)' }}>{category.description}</div>}
                   </td>
-                  <td>{category.entryCount}</td>
-                  <td style={{ color: 'var(--color-text-muted)' }}>#{index + 1}</td>
-                  <td style={{ display: 'flex', gap: '0.5rem' }}>
+                  <td>
+                    {category.entryCount > 0 ? (
+                      <Link href={`/${adminPath}/m/directory/entries?category=${category.id}`} style={{ color: 'var(--color-primary)' }}>
+                        {category.entryCount}
+                      </Link>
+                    ) : 0}
+                  </td>
+                  <td onClick={(ev) => ev.stopPropagation()}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
+                      <button type="button" className="btn btn-ghost btn-sm" aria-label="Move up" disabled={index === 0} onClick={() => move(index, -1)}>↑</button>
+                      <button type="button" className="btn btn-ghost btn-sm" aria-label="Move down" disabled={index === categories.length - 1} onClick={() => move(index, 1)}>↓</button>
+                    </div>
+                  </td>
+                  <td onClick={(ev) => ev.stopPropagation()} style={{ display: 'flex', gap: '0.5rem' }}>
                     <button className="btn btn-secondary btn-sm" onClick={() => setEditingId(category.id)}>Edit</button>
                     <button className="btn btn-danger btn-sm" onClick={() => deleteCategory(category)}>Delete</button>
                   </td>
@@ -151,7 +206,7 @@ export default function CategoriesScreen() {
               )
             )}
             {categories.length === 0 && (
-              <tr><td colSpan={5} style={{ color: 'var(--color-text-muted)', textAlign: 'center' }}>No categories yet.</td></tr>
+              <tr><td colSpan={5} style={{ color: 'var(--color-text-muted)', textAlign: 'center' }}>No categories yet - add your first one above.</td></tr>
             )}
           </tbody>
         </table>

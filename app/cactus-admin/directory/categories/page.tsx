@@ -15,10 +15,10 @@ export default async function DirectoryCategoriesPage() {
 
   return (
     <div>
-      <DirectoryNav />
       <div className="page-header">
         <h1 className="page-title">Directory</h1>
       </div>
+      <DirectoryNav />
       <CategoriesScreen />
     </div>
   )

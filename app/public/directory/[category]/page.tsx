@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import Link from 'next/link'
 import {
   getCategoryBySlug, getPublishedEntriesForCategory, getDistinctAreasForCategory,
   categoryHasRouteMarkers, getPublishedMapPins,
@@ -53,6 +54,11 @@ export default async function DirectoryCategoryPage({ params, searchParams }: Pr
   return (
     <div className="dir-wide">
       <DirectoryStyles />
+      <nav className="dir-breadcrumb" aria-label="Breadcrumb">
+        <Link href="/directory">Directory</Link>
+        <span>/</span>
+        <span>{category.name}</span>
+      </nav>
       <h1>{category.icon ? `${category.icon} ` : ''}{category.name}</h1>
       {category.description && <p style={{ color: 'var(--color-text-muted)' }}>{category.description}</p>}
 

@@ -37,28 +37,34 @@ export default function EntryFilters({ entries, coverUrls, areas, currentArea, s
 
   return (
     <div>
-      <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
+      <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', marginBottom: '0.75rem' }}>
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search this category…"
+          aria-label="Search this category"
           style={{ ...selectStyle, flex: '1 1 200px' }}
         />
         {areas.length > 0 && (
-          <select style={selectStyle} value={currentArea} onChange={(e) => updateParam('area', e.target.value)}>
+          <select aria-label="Filter by area" style={selectStyle} value={currentArea} onChange={(e) => updateParam('area', e.target.value)}>
             <option value="">All areas</option>
             {areas.map((a) => <option key={a} value={a}>{a}</option>)}
           </select>
         )}
-        <select style={selectStyle} value={sort} onChange={(e) => updateParam('sort', e.target.value)}>
+        <select aria-label="Sort by" style={selectStyle} value={sort} onChange={(e) => updateParam('sort', e.target.value)}>
           <option value="newest">Newest</option>
           <option value="alphabetical">A-Z</option>
           {routeMarkerAvailable && <option value="route_marker">Route order</option>}
         </select>
       </div>
 
+      <p className="dir-result-count">
+        {filtered.length} {filtered.length === 1 ? 'listing' : 'listings'}
+        {currentArea ? ` in ${currentArea}` : ''}
+      </p>
+
       {filtered.length === 0 ? (
-        <p style={{ color: 'var(--color-text-muted)' }}>No matches.</p>
+        <p style={{ color: 'var(--color-text-muted)' }}>No matches - try a different search or area.</p>
       ) : (
         <div className="dir-entry-grid">
           {filtered.map((entry) => (

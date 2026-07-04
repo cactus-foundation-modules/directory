@@ -1,7 +1,6 @@
 import { notFound } from 'next/navigation'
 import { getSessionFromCookie } from '@/lib/auth/session'
 import { hasPermission } from '@/lib/permissions/check'
-import DirectoryNav from '@/modules/directory/components/admin/DirectoryNav'
 import EntryEditor from '@/modules/directory/components/admin/EntryEditor'
 import { getEntryById, listCategoriesWithCounts } from '@/modules/directory/lib/db'
 
@@ -21,21 +20,11 @@ export default async function DirectoryEntryPage({ params }: Props) {
   const categories = await listCategoriesWithCounts()
 
   if (id === 'new') {
-    return (
-      <div>
-        <DirectoryNav />
-        <EntryEditor entry={null} categories={categories} />
-      </div>
-    )
+    return <EntryEditor entry={null} categories={categories} />
   }
 
   const entry = await getEntryById(id)
   if (!entry) notFound()
 
-  return (
-    <div>
-      <DirectoryNav />
-      <EntryEditor entry={entry} categories={categories} />
-    </div>
-  )
+  return <EntryEditor entry={entry} categories={categories} />
 }
