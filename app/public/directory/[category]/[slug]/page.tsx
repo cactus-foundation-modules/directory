@@ -8,6 +8,10 @@ import { getMediaUrls } from '@/modules/directory/lib/media'
 import { descriptionRscConfig } from '@/modules/directory/components/puck/descriptionRscConfig'
 import DirectoryStyles from '@/modules/directory/components/public/DirectoryStyles'
 import EntryLocationMap from '@/modules/directory/components/public/EntryLocationMap'
+import { resolveThemeLayout } from '@/lib/layout/resolveThemeLayout'
+import { getModuleLayoutPuckRscConfig } from '@/lib/puck/config'
+import { injectEntryContext } from '@/modules/directory/lib/inject-entry-context'
+import type { PuckData } from '@/modules/directory/lib/types'
 
 type Props = { params: Promise<{ category: string; slug: string }> }
 
@@ -30,6 +34,12 @@ export default async function DirectoryEntryPage({ params }: Props) {
   const { category, slug } = await params
   const entry = await getEntryForPublic(category, slug)
   if (!entry) notFound()
+
+  const layout = await resolveThemeLayout('directoryEntry', { moduleName: 'directory', slug: entry.slug })
+  if (layout?.builderData) {
+    const data = injectEntryContext(layout.builderData as PuckData, { entrySlug: entry.slug, categorySlug: entry.categorySlug })
+    return <Render config={getModuleLayoutPuckRscConfig('directoryEntry') as any} data={data as any} />
+  }
 
   const [settings, imageUrls] = await Promise.all([
     getDirectorySettings(),

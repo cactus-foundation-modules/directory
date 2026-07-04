@@ -1,6 +1,6 @@
 {
   "name": "directory",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "tablePrefix": "dir_",
   "description": "Map-based listings with categories, featured entries, and a public directory.",
   "publicBasePath": "directory",
@@ -15,7 +15,22 @@
   "cronJobs": [
     { "path": "/api/m/directory/cron/expire-featured", "schedule": "0 1 * * *" }
   ],
-  "puckBlocks": [],
+  "puckBlocks": [
+    { "type": "DirectoryCategoryHeader", "import": "./components/puck/DirectoryCategoryHeader", "component": "directoryCategoryHeaderPuckComponent", "rscComponent": "directoryCategoryHeaderPuckRscComponent", "layoutTypes": ["directoryCategory"] },
+    { "type": "DirectoryEntryBrowser", "import": "./components/puck/DirectoryEntryBrowser", "component": "directoryEntryBrowserPuckComponent", "rscComponent": "directoryEntryBrowserPuckRscComponent", "layoutTypes": ["directoryCategory"] },
+    { "type": "DirectoryCategoryMap", "import": "./components/puck/DirectoryCategoryMap", "component": "directoryCategoryMapPuckComponent", "rscComponent": "directoryCategoryMapPuckRscComponent", "layoutTypes": ["directoryCategory"] },
+    { "type": "DirectoryEntryHeader", "import": "./components/puck/DirectoryEntryHeader", "component": "directoryEntryHeaderPuckComponent", "rscComponent": "directoryEntryHeaderPuckRscComponent", "layoutTypes": ["directoryEntry"] },
+    { "type": "DirectoryContactCard", "import": "./components/puck/DirectoryContactCard", "component": "directoryContactCardPuckComponent", "rscComponent": "directoryContactCardPuckRscComponent", "layoutTypes": ["directoryEntry"] },
+    { "type": "DirectoryLocationMap", "import": "./components/puck/DirectoryLocationMap", "component": "directoryLocationMapPuckComponent", "rscComponent": "directoryLocationMapPuckRscComponent", "layoutTypes": ["directoryEntry"] },
+    { "type": "DirectoryRelatedEntries", "import": "./components/puck/DirectoryRelatedEntries", "component": "directoryRelatedEntriesPuckComponent", "rscComponent": "directoryRelatedEntriesPuckRscComponent", "layoutTypes": ["directoryEntry"] }
+  ],
+  "layoutTypes": {
+    "groupLabel": "Directory",
+    "types": [
+      { "key": "directoryCategory", "label": "Category", "starterImport": "./lib/starterLayouts", "starterExport": "directoryCategoryStarters" },
+      { "key": "directoryEntry", "label": "Entry", "starterImport": "./lib/starterLayouts", "starterExport": "directoryEntryStarters" }
+    ]
+  },
   "settingsTabs": [
     { "id": "directory", "label": "Directory", "permission": "directory.manage", "import": "./components/admin/DirectorySettingsTab", "component": "DirectorySettingsTab" }
   ],
