@@ -7,6 +7,7 @@ import {
   categoryHasRouteMarkers, getPublishedMapPins,
 } from '@/modules/directory/lib/db'
 import { getDirectorySettings } from '@/modules/directory/lib/settings'
+import { getDirectoryBreakpoints } from '@/modules/directory/lib/breakpoints'
 import { getCoverUrls } from '@/modules/directory/lib/media'
 import DirectoryStyles from '@/modules/directory/components/public/DirectoryStyles'
 import EntryFilters from '@/modules/directory/components/public/EntryFilters'
@@ -61,6 +62,7 @@ export default async function DirectoryCategoryPage({ params, searchParams }: Pr
   const pins = await getPublishedMapPins(category.id)
   const coverUrlMap = await getCoverUrls(entries.map((e) => e.images[0] ?? null))
   const coverUrls = Object.fromEntries(coverUrlMap)
+  const { mobileBp } = await getDirectoryBreakpoints()
 
   return (
     <div className="dir-wide">
@@ -75,7 +77,7 @@ export default async function DirectoryCategoryPage({ params, searchParams }: Pr
 
       {pins.length > 0 && (
         <div style={{ marginBottom: '1.5rem' }}>
-          <PublicMap entries={pins} zoom={settings.mapZoom} centre={[settings.mapCentreLat, settings.mapCentreLng]} collapsible />
+          <PublicMap entries={pins} zoom={settings.mapZoom} centre={[settings.mapCentreLat, settings.mapCentreLng]} collapsible mobileBreakpointPx={parseInt(mobileBp, 10) || 640} />
         </div>
       )}
 

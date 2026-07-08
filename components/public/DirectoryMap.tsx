@@ -13,16 +13,24 @@ type Props = {
   centre?: [number, number]
   singlePin?: boolean
   collapsible?: boolean
+  mobileBreakpointPx?: number
 }
 
 function pinColour(pin: DirectoryMapPin, categoryColours?: Record<string, string>): string {
   return categoryColours?.[pin.categorySlug] ?? 'var(--color-primary)'
 }
 
-export default function DirectoryMap({ entries, categoryColours, zoom = 11, centre = [51.505, -0.09], singlePin = false, collapsible = false }: Props) {
+// Popup content is built as an HTML string for Leaflet's bindPopup - escape
+// entry name/description so a stray `<`/`&` in admin-entered data can't break
+// out of the markup (e.g. inject a link over the "View listing" anchor).
+function escapeHtml(s: string): string {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+}
+
+export default function DirectoryMap({ entries, categoryColours, zoom = 11, centre = [51.505, -0.09], singlePin = false, collapsible = false, mobileBreakpointPx = 640 }: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [collapsed, setCollapsed] = useState(
-    collapsible && typeof window !== 'undefined' && window.innerWidth < 768
+    collapsible && typeof window !== 'undefined' && window.innerWidth < mobileBreakpointPx
   )
 
   useEffect(() => {
@@ -73,9 +81,9 @@ export default function DirectoryMap({ entries, categoryColours, zoom = 11, cent
       const markers = entries.map((pin) => {
         const marker = L.marker([pin.lat, pin.lng], { icon: buildIcon(pin) })
         if (!singlePin) {
-          const description = pin.shortDescription ? pin.shortDescription.slice(0, 100) : ''
+          const description = pin.shortDescription ? escapeHtml(pin.shortDescription.slice(0, 100)) : ''
           marker.bindPopup(
-            `<strong>${pin.name}</strong>${description ? `<br>${description}` : ''}<br><a href="/directory/${pin.categorySlug}/${pin.slug}">View listing</a>`
+            `<strong>${escapeHtml(pin.name)}</strong>${description ? `<br>${description}` : ''}<br><a href="/directory/${encodeURIComponent(pin.categorySlug)}/${encodeURIComponent(pin.slug)}">View listing</a>`
           )
         }
         return marker

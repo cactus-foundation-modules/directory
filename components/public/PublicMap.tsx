@@ -10,11 +10,12 @@ type Props = {
   zoom?: number
   centre?: [number, number]
   collapsible?: boolean
+  mobileBreakpointPx?: number
 }
 
 // Thin client wrapper so server component pages (index/category) can render
 // the Leaflet map without importing next/dynamic(ssr:false) themselves - not
 // allowed directly inside a Server Component.
-export default function PublicMap({ entries, zoom, centre, collapsible }: Props) {
-  return <DirectoryMap entries={entries} zoom={zoom} centre={centre} collapsible={collapsible} />
+export default function PublicMap({ entries, zoom, centre, collapsible, mobileBreakpointPx }: Props) {
+  return <DirectoryMap entries={entries} zoom={zoom} centre={centre} collapsible={collapsible} mobileBreakpointPx={mobileBreakpointPx} />
 }
