@@ -1,8 +1,10 @@
-import { connection } from 'next/server'
-import { getPublishedMapPins } from '@/modules/directory/lib/db'
-import { getDirectorySettings } from '@/modules/directory/lib/settings'
-import { getDirectoryBreakpoints } from '@/modules/directory/lib/breakpoints'
-import PublicMap from '@/modules/directory/components/public/PublicMap'
+// Editor half only. The database-backed render lives in ./DirectoryCategoryMap.rsc.
+//
+// This file is pulled into the Puck editor's client bundle through the generated
+// module-components registry, so anything it imports ends up in the browser. It
+// must never reach prisma: lib/db/prisma attaches a client extension at module
+// scope, which throws on load in a browser and takes the whole page builder
+// down, not just this block.
 
 // categoryId is injected by the category page (lib/inject-category-context.ts)
 export type DirectoryCategoryMapProps = { categoryId?: string }
@@ -11,23 +13,9 @@ export function DirectoryCategoryMap() {
   return <div style={{ height: 320, background: 'var(--color-border)', borderRadius: 8, opacity: 0.6 }} />
 }
 
-export async function DirectoryCategoryMapRsc(props: DirectoryCategoryMapProps) {
-  await connection()
-  if (!props.categoryId) return null
-  const [pins, settings, { mobileBp }] = await Promise.all([
-    getPublishedMapPins(props.categoryId),
-    getDirectorySettings(),
-    getDirectoryBreakpoints(),
-  ])
-  if (pins.length === 0) return null
-  return <PublicMap entries={pins} zoom={settings.mapZoom} centre={[settings.mapCentreLat, settings.mapCentreLng]} collapsible mobileBreakpointPx={parseInt(mobileBp, 10) || 640} />
-}
-
 export const directoryCategoryMapPuckComponent = {
   label: 'Directory: Category Map',
   fields: {},
   defaultProps: {},
   render: DirectoryCategoryMap,
 }
-
-export const directoryCategoryMapPuckRscComponent = { ...directoryCategoryMapPuckComponent, render: DirectoryCategoryMapRsc }

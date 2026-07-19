@@ -1,7 +1,10 @@
-import { connection } from 'next/server'
-import Link from 'next/link'
-import { getCategoryBySlug } from '@/modules/directory/lib/db'
-import DirectoryStyles from '@/modules/directory/components/public/DirectoryStyles'
+// Editor half only. The database-backed render lives in ./DirectoryCategoryHeader.rsc.
+//
+// This file is pulled into the Puck editor's client bundle through the generated
+// module-components registry, so anything it imports ends up in the browser. It
+// must never reach prisma: lib/db/prisma attaches a client extension at module
+// scope, which throws on load in a browser and takes the whole page builder
+// down, not just this block.
 
 // [ANCHOR] - categorySlug is injected by the category page (lib/inject-category-context.ts)
 export type DirectoryCategoryHeaderProps = { categorySlug?: string }
@@ -16,26 +19,6 @@ export function DirectoryCategoryHeader() {
   )
 }
 
-export async function DirectoryCategoryHeaderRsc(props: DirectoryCategoryHeaderProps) {
-  await connection()
-  if (!props.categorySlug) return null
-  const category = await getCategoryBySlug(props.categorySlug)
-  if (!category) return null
-
-  return (
-    <div>
-      <DirectoryStyles />
-      <nav className="dir-breadcrumb" aria-label="Breadcrumb">
-        <Link href="/directory">Directory</Link>
-        <span>/</span>
-        <span>{category.name}</span>
-      </nav>
-      <h1>{category.name}</h1>
-      {category.description && <p style={{ fontSize: '1.125rem', color: 'var(--color-text-muted)' }}>{category.description}</p>}
-    </div>
-  )
-}
-
 export const directoryCategoryHeaderPuckComponent = {
   label: 'Directory: Category Header [Anchor]',
   fields: {},
@@ -43,5 +26,3 @@ export const directoryCategoryHeaderPuckComponent = {
   permissions: { delete: false, duplicate: false },
   render: DirectoryCategoryHeader,
 }
-
-export const directoryCategoryHeaderPuckRscComponent = { ...directoryCategoryHeaderPuckComponent, render: DirectoryCategoryHeaderRsc }

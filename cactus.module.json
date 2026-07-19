@@ -1,6 +1,6 @@
 {
   "name": "directory",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "tablePrefix": "dir_",
   "description": "Map-based listings with categories, featured entries, and a public directory.",
   "publicBasePath": "directory",
@@ -34,6 +34,7 @@
     {
       "type": "DirectoryCategoryHeader",
       "import": "./components/puck/DirectoryCategoryHeader",
+      "rscImport": "./components/puck/DirectoryCategoryHeader.rsc",
       "component": "directoryCategoryHeaderPuckComponent",
       "rscComponent": "directoryCategoryHeaderPuckRscComponent",
       "layoutTypes": [
@@ -43,6 +44,7 @@
     {
       "type": "DirectoryEntryBrowser",
       "import": "./components/puck/DirectoryEntryBrowser",
+      "rscImport": "./components/puck/DirectoryEntryBrowser.rsc",
       "component": "directoryEntryBrowserPuckComponent",
       "rscComponent": "directoryEntryBrowserPuckRscComponent",
       "layoutTypes": [
@@ -52,6 +54,7 @@
     {
       "type": "DirectoryCategoryMap",
       "import": "./components/puck/DirectoryCategoryMap",
+      "rscImport": "./components/puck/DirectoryCategoryMap.rsc",
       "component": "directoryCategoryMapPuckComponent",
       "rscComponent": "directoryCategoryMapPuckRscComponent",
       "layoutTypes": [
@@ -61,6 +64,7 @@
     {
       "type": "DirectoryEntryHeader",
       "import": "./components/puck/DirectoryEntryHeader",
+      "rscImport": "./components/puck/DirectoryEntryHeader.rsc",
       "component": "directoryEntryHeaderPuckComponent",
       "rscComponent": "directoryEntryHeaderPuckRscComponent",
       "layoutTypes": [
@@ -70,6 +74,7 @@
     {
       "type": "DirectoryContactCard",
       "import": "./components/puck/DirectoryContactCard",
+      "rscImport": "./components/puck/DirectoryContactCard.rsc",
       "component": "directoryContactCardPuckComponent",
       "rscComponent": "directoryContactCardPuckRscComponent",
       "layoutTypes": [
@@ -79,6 +84,7 @@
     {
       "type": "DirectoryLocationMap",
       "import": "./components/puck/DirectoryLocationMap",
+      "rscImport": "./components/puck/DirectoryLocationMap.rsc",
       "component": "directoryLocationMapPuckComponent",
       "rscComponent": "directoryLocationMapPuckRscComponent",
       "layoutTypes": [
@@ -88,6 +94,7 @@
     {
       "type": "DirectoryRelatedEntries",
       "import": "./components/puck/DirectoryRelatedEntries",
+      "rscImport": "./components/puck/DirectoryRelatedEntries.rsc",
       "component": "directoryRelatedEntriesPuckComponent",
       "rscComponent": "directoryRelatedEntriesPuckRscComponent",
       "layoutTypes": [

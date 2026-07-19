@@ -1,12 +1,10 @@
-import { connection } from 'next/server'
-import {
-  getPublishedEntriesForCategory, getDistinctAreasForCategory, categoryHasRouteMarkers,
-} from '@/modules/directory/lib/db'
-import { getCoverUrls } from '@/modules/directory/lib/media'
-import { getDirectorySettings } from '@/modules/directory/lib/settings'
-import EntryFilters from '@/modules/directory/components/public/EntryFilters'
-import DirectoryStyles from '@/modules/directory/components/public/DirectoryStyles'
-import type { CategorySort } from '@/modules/directory/lib/db'
+// Editor half only. The database-backed render lives in ./DirectoryEntryBrowser.rsc.
+//
+// This file is pulled into the Puck editor's client bundle through the generated
+// module-components registry, so anything it imports ends up in the browser. It
+// must never reach prisma: lib/db/prisma attaches a client extension at module
+// scope, which throws on load in a browser and takes the whole page builder
+// down, not just this block.
 
 // [ANCHOR] - categoryId/categorySlug/area/sort are injected by the category
 // page (lib/inject-category-context.ts). viewMode/pageSize are the only
@@ -29,39 +27,6 @@ export function DirectoryEntryBrowser() {
   )
 }
 
-export async function DirectoryEntryBrowserRsc(props: DirectoryEntryBrowserProps) {
-  await connection()
-  if (!props.categoryId || !props.categorySlug) return null
-
-  const [entries, areas, routeMarkerAvailable, settings] = await Promise.all([
-    getPublishedEntriesForCategory(props.categoryId, { area: props.area, sort: props.sort as CategorySort | undefined }),
-    getDistinctAreasForCategory(props.categoryId),
-    categoryHasRouteMarkers(props.categoryId),
-    getDirectorySettings(),
-  ])
-
-  const pageSize = props.pageSize && props.pageSize > 0 ? props.pageSize : undefined
-  const visible = pageSize ? entries.slice(0, pageSize) : entries
-  const coverUrlMap = await getCoverUrls(visible.map((e) => e.images[0] ?? null))
-  const coverUrls = Object.fromEntries(coverUrlMap)
-
-  return (
-    <>
-      <DirectoryStyles />
-      <EntryFilters
-        entries={visible}
-        coverUrls={coverUrls}
-        areas={areas}
-        currentArea={props.area ?? ''}
-        sort={props.sort ?? 'newest'}
-        routeMarkerAvailable={routeMarkerAvailable}
-        featuredLabel={settings.featuredLabel}
-        categorySlug={props.categorySlug}
-      />
-    </>
-  )
-}
-
 export const directoryEntryBrowserPuckComponent = {
   label: 'Directory: Entry Browser [Anchor]',
   fields: {
@@ -71,5 +36,3 @@ export const directoryEntryBrowserPuckComponent = {
   permissions: { delete: false, duplicate: false },
   render: DirectoryEntryBrowser,
 }
-
-export const directoryEntryBrowserPuckRscComponent = { ...directoryEntryBrowserPuckComponent, render: DirectoryEntryBrowserRsc }
