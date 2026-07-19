@@ -1,42 +1,146 @@
 {
   "name": "directory",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "tablePrefix": "dir_",
   "description": "Map-based listings with categories, featured entries, and a public directory.",
   "publicBasePath": "directory",
-  "permissions": ["directory.access", "directory.manage"],
+  "permissions": [
+    "directory.access",
+    "directory.manage"
+  ],
   "navGroupLabel": "Content",
   "navEntries": [
-    { "label": "Directory", "path": "/m/directory/entries", "icon": "<path d=\"M12 22s8-9 8-14a8 8 0 1 0-16 0c0 5 8 14 8 14Z\"/><circle cx=\"12\" cy=\"8\" r=\"3\"/>", "permission": "directory.access" }
+    {
+      "label": "Directory",
+      "path": "/m/directory/entries",
+      "icon": "<path d=\"M12 22s8-9 8-14a8 8 0 1 0-16 0c0 5 8 14 8 14Z\"/><circle cx=\"12\" cy=\"8\" r=\"3\"/>",
+      "permission": "directory.access"
+    }
   ],
   "requiredEnvVars": [],
   "cookieCategories": [],
-  "teardown": ["dir_entries", "dir_categories", "dir_settings"],
+  "teardown": [
+    "dir_entries",
+    "dir_categories",
+    "dir_settings"
+  ],
   "cronJobs": [
-    { "path": "/api/m/directory/cron/expire-featured", "schedule": "0 1 * * *" }
+    {
+      "path": "/api/m/directory/cron/expire-featured",
+      "schedule": "0 1 * * *"
+    }
   ],
   "puckBlocks": [
-    { "type": "DirectoryCategoryHeader", "import": "./components/puck/DirectoryCategoryHeader", "component": "directoryCategoryHeaderPuckComponent", "rscComponent": "directoryCategoryHeaderPuckRscComponent", "layoutTypes": ["directoryCategory"] },
-    { "type": "DirectoryEntryBrowser", "import": "./components/puck/DirectoryEntryBrowser", "component": "directoryEntryBrowserPuckComponent", "rscComponent": "directoryEntryBrowserPuckRscComponent", "layoutTypes": ["directoryCategory"] },
-    { "type": "DirectoryCategoryMap", "import": "./components/puck/DirectoryCategoryMap", "component": "directoryCategoryMapPuckComponent", "rscComponent": "directoryCategoryMapPuckRscComponent", "layoutTypes": ["directoryCategory"] },
-    { "type": "DirectoryEntryHeader", "import": "./components/puck/DirectoryEntryHeader", "component": "directoryEntryHeaderPuckComponent", "rscComponent": "directoryEntryHeaderPuckRscComponent", "layoutTypes": ["directoryEntry"] },
-    { "type": "DirectoryContactCard", "import": "./components/puck/DirectoryContactCard", "component": "directoryContactCardPuckComponent", "rscComponent": "directoryContactCardPuckRscComponent", "layoutTypes": ["directoryEntry"] },
-    { "type": "DirectoryLocationMap", "import": "./components/puck/DirectoryLocationMap", "component": "directoryLocationMapPuckComponent", "rscComponent": "directoryLocationMapPuckRscComponent", "layoutTypes": ["directoryEntry"] },
-    { "type": "DirectoryRelatedEntries", "import": "./components/puck/DirectoryRelatedEntries", "component": "directoryRelatedEntriesPuckComponent", "rscComponent": "directoryRelatedEntriesPuckRscComponent", "layoutTypes": ["directoryEntry"] }
+    {
+      "type": "DirectoryCategoryHeader",
+      "import": "./components/puck/DirectoryCategoryHeader",
+      "component": "directoryCategoryHeaderPuckComponent",
+      "rscComponent": "directoryCategoryHeaderPuckRscComponent",
+      "layoutTypes": [
+        "directoryCategory"
+      ]
+    },
+    {
+      "type": "DirectoryEntryBrowser",
+      "import": "./components/puck/DirectoryEntryBrowser",
+      "component": "directoryEntryBrowserPuckComponent",
+      "rscComponent": "directoryEntryBrowserPuckRscComponent",
+      "layoutTypes": [
+        "directoryCategory"
+      ]
+    },
+    {
+      "type": "DirectoryCategoryMap",
+      "import": "./components/puck/DirectoryCategoryMap",
+      "component": "directoryCategoryMapPuckComponent",
+      "rscComponent": "directoryCategoryMapPuckRscComponent",
+      "layoutTypes": [
+        "directoryCategory"
+      ]
+    },
+    {
+      "type": "DirectoryEntryHeader",
+      "import": "./components/puck/DirectoryEntryHeader",
+      "component": "directoryEntryHeaderPuckComponent",
+      "rscComponent": "directoryEntryHeaderPuckRscComponent",
+      "layoutTypes": [
+        "directoryEntry"
+      ]
+    },
+    {
+      "type": "DirectoryContactCard",
+      "import": "./components/puck/DirectoryContactCard",
+      "component": "directoryContactCardPuckComponent",
+      "rscComponent": "directoryContactCardPuckRscComponent",
+      "layoutTypes": [
+        "directoryEntry"
+      ]
+    },
+    {
+      "type": "DirectoryLocationMap",
+      "import": "./components/puck/DirectoryLocationMap",
+      "component": "directoryLocationMapPuckComponent",
+      "rscComponent": "directoryLocationMapPuckRscComponent",
+      "layoutTypes": [
+        "directoryEntry"
+      ]
+    },
+    {
+      "type": "DirectoryRelatedEntries",
+      "import": "./components/puck/DirectoryRelatedEntries",
+      "component": "directoryRelatedEntriesPuckComponent",
+      "rscComponent": "directoryRelatedEntriesPuckRscComponent",
+      "layoutTypes": [
+        "directoryEntry"
+      ]
+    }
   ],
   "layoutTypes": {
     "groupLabel": "Directory",
     "types": [
-      { "key": "directoryCategory", "label": "Category", "starterImport": "./lib/starterLayouts", "starterExport": "directoryCategoryStarters" },
-      { "key": "directoryEntry", "label": "Entry", "starterImport": "./lib/starterLayouts", "starterExport": "directoryEntryStarters" }
+      {
+        "key": "directoryCategory",
+        "label": "Category",
+        "starterImport": "./lib/starterLayouts",
+        "starterExport": "directoryCategoryStarters"
+      },
+      {
+        "key": "directoryEntry",
+        "label": "Entry",
+        "starterImport": "./lib/starterLayouts",
+        "starterExport": "directoryEntryStarters"
+      }
     ]
   },
   "settingsTabs": [
-    { "id": "directory", "label": "Directory", "permission": "directory.manage", "import": "./components/admin/DirectorySettingsTab", "component": "DirectorySettingsTab" }
+    {
+      "id": "directory",
+      "label": "Directory",
+      "permission": "directory.manage",
+      "import": "./components/admin/DirectorySettingsTab",
+      "component": "DirectorySettingsTab"
+    }
   ],
   "extensionPoints": [
-    { "point": "core.admin-dashboard-widgets", "id": "directory-summary", "permission": "directory.access", "import": "./components/admin/DashboardWidget", "component": "directoryDashboardWidget" },
-    { "point": "core.menu-entity-provider", "id": "directory", "import": "./lib/menu-entity-provider", "component": "directoryMenuEntityProvider" }
+    {
+      "point": "core.admin-dashboard-widgets",
+      "id": "directory-summary",
+      "permission": "directory.access",
+      "import": "./components/admin/DashboardWidget",
+      "component": "directoryDashboardWidget"
+    },
+    {
+      "point": "core.menu-entity-provider",
+      "id": "directory",
+      "import": "./lib/menu-entity-provider",
+      "component": "directoryMenuEntityProvider"
+    },
+    {
+      "point": "core.media-usage-providers",
+      "id": "directory",
+      "import": "./lib/media-usage-provider",
+      "component": "directoryMediaUsageProvider"
+    }
   ],
   "requiresModules": []
 }
