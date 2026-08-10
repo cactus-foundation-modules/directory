@@ -138,7 +138,7 @@ export default function CsvImport({ categorySlugs }: { categorySlugs: string[] }
 
   return (
     <div>
-      <p style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)' }}>
+      <p style={{ fontSize: '0.8125rem', color: 'var(--color-text-secondary)' }}>
         Columns: {EXPECTED_COLUMNS.join(', ')}. Only <code>name</code>, <code>category_slug</code>, <code>lat</code> and <code>lng</code> are required.
         Separate multiple <code>tags</code> with a pipe (|). Everything imports as a draft.
       </p>
@@ -165,7 +165,7 @@ export default function CsvImport({ categorySlugs }: { categorySlugs: string[] }
           }}
         >
           <span style={{ fontSize: '0.9375rem' }}>Drop a CSV file here, or click to choose one</span>
-          <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>.csv files only</span>
+          <span style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)' }}>.csv files only</span>
           <input
             type="file"
             accept=".csv,text/csv"

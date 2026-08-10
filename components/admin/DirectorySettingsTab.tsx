@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import type { DirectorySettings } from '@/modules/directory/lib/types'
 
 const inputStyle = { width: '100%', maxWidth: 320, padding: '0.5rem', border: '1px solid var(--color-border)', borderRadius: 6, background: 'var(--color-bg)', color: 'var(--color-text)', fontFamily: 'inherit', fontSize: '0.875rem' }
-const labelStyle = { display: 'block', fontSize: '0.75rem', color: 'var(--color-text-muted)', marginBottom: '0.25rem' }
+const labelStyle = { display: 'block', fontSize: '0.75rem', color: 'var(--color-text-secondary)', marginBottom: '0.25rem' }
 
 export function DirectorySettingsTab() {
   const [settings, setSettings] = useState<DirectorySettings | null>(null)
@@ -85,13 +85,13 @@ export function DirectorySettingsTab() {
         <div style={{ marginTop: '0.75rem' }}>
           <label style={labelStyle}>Featured label</label>
           <input style={inputStyle} value={featuredLabel} onChange={(e) => setFeaturedLabel(e.target.value)} maxLength={50} />
-          <p style={{ fontSize: '0.6875rem', color: 'var(--color-text-muted)', margin: '0.25rem 0 0' }}>The badge shown on entries marked &quot;Featured&quot; - e.g. &quot;Featured&quot; or &quot;Sponsored&quot;.</p>
+          <p style={{ fontSize: '0.6875rem', color: 'var(--color-text-secondary)', margin: '0.25rem 0 0' }}>The badge shown on entries marked &quot;Featured&quot; - e.g. &quot;Featured&quot; or &quot;Sponsored&quot;.</p>
         </div>
       </div>
 
       <div>
         <h3 style={{ margin: '0 0 0.75rem', fontSize: '0.9375rem' }}>Map</h3>
-        <p style={{ fontSize: '0.6875rem', color: 'var(--color-text-muted)', margin: '0 0 0.5rem' }}>Where the directory map opens by default, before it zooms to fit your entries.</p>
+        <p style={{ fontSize: '0.6875rem', color: 'var(--color-text-secondary)', margin: '0 0 0.5rem' }}>Where the directory map opens by default, before it zooms to fit your entries.</p>
         <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '0.75rem' }}>
           <div>
             <label style={labelStyle}>Map centre latitude</label>
@@ -114,7 +114,7 @@ export function DirectorySettingsTab() {
           <input type="checkbox" checked={csvImportEnabled} onChange={(e) => setCsvImportEnabled(e.target.checked)} />
           Allow CSV import
         </label>
-        <p style={{ fontSize: '0.6875rem', color: 'var(--color-text-muted)', margin: '0.25rem 0 0' }}>Turn off to hide the CSV import screen from Directory managers.</p>
+        <p style={{ fontSize: '0.6875rem', color: 'var(--color-text-secondary)', margin: '0.25rem 0 0' }}>Turn off to hide the CSV import screen from Directory managers.</p>
       </div>
 
       <div>

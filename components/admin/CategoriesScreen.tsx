@@ -146,7 +146,7 @@ export default function CategoriesScreen() {
       </div>
 
       {categories.length > 0 && (
-        <p style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', margin: '0 0 0.5rem' }}>
+        <p style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', margin: '0 0 0.5rem' }}>
           Drag rows, or use the arrows, to change the order categories appear on the public directory.
         </p>
       )}
@@ -183,7 +183,7 @@ export default function CategoriesScreen() {
                   <td style={{ fontSize: '1.1rem' }}>{category.icon}</td>
                   <td>
                     <div>{category.name}</div>
-                    {category.description && <div style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-muted)' }}>{category.description}</div>}
+                    {category.description && <div style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)' }}>{category.description}</div>}
                   </td>
                   <td>
                     {category.entryCount > 0 ? (
@@ -206,7 +206,7 @@ export default function CategoriesScreen() {
               )
             )}
             {categories.length === 0 && (
-              <tr><td colSpan={5} style={{ color: 'var(--color-text-muted)', textAlign: 'center' }}>No categories yet - add your first one above.</td></tr>
+              <tr><td colSpan={5} style={{ color: 'var(--color-text-secondary)', textAlign: 'center' }}>No categories yet - add your first one above.</td></tr>
             )}
           </tbody>
         </table>

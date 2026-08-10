@@ -167,14 +167,14 @@ export default function EntriesScreen() {
       </div>
 
       {!loading && (
-        <p style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)', margin: '-0.5rem 0 1rem' }}>
+        <p style={{ fontSize: '0.8125rem', color: 'var(--color-text-secondary)', margin: '-0.5rem 0 1rem' }}>
           {total} {total === 1 ? 'entry' : 'entries'}{hasFilters ? ' matching these filters' : ''}
         </p>
       )}
 
       {selected.size > 0 && (
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginBottom: '0.75rem', padding: '0.5rem 0.75rem', background: 'var(--color-surface-alt)', borderRadius: '0.375rem' }}>
-          <span style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)' }}>{selected.size} selected</span>
+          <span style={{ fontSize: '0.875rem', color: 'var(--color-text-secondary)' }}>{selected.size} selected</span>
           <button className="btn btn-secondary btn-sm" disabled={busy} onClick={() => bulkStatus('published')}>Publish</button>
           <button className="btn btn-secondary btn-sm" disabled={busy} onClick={() => bulkStatus('draft')}>Unpublish</button>
           <button className="btn btn-danger btn-sm" disabled={busy} onClick={bulkDelete}>Delete</button>
@@ -208,7 +208,7 @@ export default function EntriesScreen() {
           </table>
         </div>
       ) : entries.length === 0 ? (
-        <div className="card" style={{ textAlign: 'center', color: 'var(--color-text-muted)', padding: '3rem' }}>
+        <div className="card" style={{ textAlign: 'center', color: 'var(--color-text-secondary)', padding: '3rem' }}>
           {hasFilters ? (
             <>
               <p style={{ margin: '0 0 0.75rem' }}>No entries match these filters.</p>
@@ -248,7 +248,7 @@ export default function EntriesScreen() {
                     </td>
                     <td>{e.name}</td>
                     <td style={{ fontSize: '0.8125rem' }}>{e.categoryName}</td>
-                    <td style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)' }}>
+                    <td style={{ fontSize: '0.8125rem', color: 'var(--color-text-secondary)' }}>
                       {e.area ?? '—'}
                       {missingLoc && (
                         <span title="No coordinates set" style={{ marginLeft: '0.375rem' }}>⚠️</span>
@@ -256,7 +256,7 @@ export default function EntriesScreen() {
                     </td>
                     <td>{statusBadge(e.status)}</td>
                     <td>{e.featured ? <span className="badge badge-primary">Featured</span> : '—'}</td>
-                    <td style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)', whiteSpace: 'nowrap' }}>{new Date(e.createdAt).toLocaleDateString('en-GB')}</td>
+                    <td style={{ fontSize: '0.8125rem', color: 'var(--color-text-secondary)', whiteSpace: 'nowrap' }}>{new Date(e.createdAt).toLocaleDateString('en-GB')}</td>
                     <td onClick={(ev) => ev.stopPropagation()}>
                       <div style={{ display: 'flex', gap: '0.25rem', justifyContent: 'flex-end' }}>
                         <Link href={`${base}/${e.id}`} className="btn btn-ghost btn-sm">Edit</Link>
@@ -275,7 +275,7 @@ export default function EntriesScreen() {
       {totalPages > 1 && (
         <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem', justifyContent: 'center' }}>
           {page > 1 && <button className="btn btn-secondary btn-sm" onClick={() => setPage(page - 1)}>Previous</button>}
-          <span style={{ lineHeight: '2rem', fontSize: '0.875rem', color: 'var(--color-text-muted)' }}>Page {page} of {totalPages}</span>
+          <span style={{ lineHeight: '2rem', fontSize: '0.875rem', color: 'var(--color-text-secondary)' }}>Page {page} of {totalPages}</span>
           {page < totalPages && <button className="btn btn-secondary btn-sm" onClick={() => setPage(page + 1)}>Next</button>}
         </div>
       )}

@@ -16,7 +16,7 @@ import EntryMapPreview from './EntryMapPreview'
 import type { DirectoryCategoryWithCount, DirectoryEntryWithCategory, PuckData } from '@/modules/directory/lib/types'
 
 const inputStyle = { width: '100%', padding: '0.5rem', border: '1px solid var(--color-border)', borderRadius: 6, background: 'var(--color-bg)', color: 'var(--color-text)', fontFamily: 'inherit', fontSize: '0.875rem' }
-const labelStyle = { display: 'block', fontSize: '0.75rem', color: 'var(--color-text-muted)', marginBottom: '0.25rem' }
+const labelStyle = { display: 'block', fontSize: '0.75rem', color: 'var(--color-text-secondary)', marginBottom: '0.25rem' }
 
 function slugify(name: string): string {
   return name.toLowerCase().replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-').replace(/-+/g, '-').slice(0, 100)
@@ -217,7 +217,7 @@ export default function EntryEditor({ entry, categories }: Props) {
       <DirectoryNav />
 
       {error && <div ref={errorRef} className="alert alert-danger" style={{ marginBottom: '1rem', fontSize: '0.8125rem' }}>{error}</div>}
-      {previewUrl && <div style={{ marginBottom: '1rem', fontSize: '0.75rem', color: 'var(--color-text-muted)', wordBreak: 'break-all' }}>{previewUrl}</div>}
+      {previewUrl && <div style={{ marginBottom: '1rem', fontSize: '0.75rem', color: 'var(--color-text-secondary)', wordBreak: 'break-all' }}>{previewUrl}</div>}
 
       <div className="directory-entry-grid-container directory-entry-layout">
         <div className="card de-core" style={{ padding: '1rem' }}>
@@ -301,7 +301,7 @@ export default function EntryEditor({ entry, categories }: Props) {
               value={shortDescription}
               onChange={(e) => setShortDescription(e.target.value)}
             />
-            <div style={{ fontSize: '0.6875rem', color: 'var(--color-text-muted)', textAlign: 'right' }}>{shortDescription.length}/160</div>
+            <div style={{ fontSize: '0.6875rem', color: 'var(--color-text-secondary)', textAlign: 'right' }}>{shortDescription.length}/160</div>
           </div>
           <label style={labelStyle}>Description</label>
           <div style={{ minHeight: 320, border: '1px solid var(--color-border)', borderRadius: 6, overflow: 'hidden' }}>

@@ -7,7 +7,7 @@ const DirectoryMap = dynamic(() => import('@/modules/directory/components/public
 export default function EntryMapPreview({ lat, lng, name }: { lat: number | null; lng: number | null; name: string }) {
   if (lat === null || lng === null) {
     return (
-      <div style={{ height: 240, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--color-bg-subtle)', borderRadius: 'var(--radius-lg)', color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>
+      <div style={{ height: 240, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--color-bg-subtle)', borderRadius: 'var(--radius-lg)', color: 'var(--color-text-secondary)', fontSize: '0.875rem' }}>
         No coordinates yet
       </div>
     )

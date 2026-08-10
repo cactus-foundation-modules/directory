@@ -49,10 +49,10 @@ function MultiMediaPickerModal({ alreadySelected, onAdd, onClose }: {
             autoFocus
             style={{ flex: 1, padding: '0.375rem 0.75rem', border: '1px solid var(--color-border)', borderRadius: 6, fontSize: '0.875rem', fontFamily: 'inherit', background: 'var(--color-bg)', color: 'var(--color-text)' }}
           />
-          <button type="button" aria-label="Close" onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.25rem', color: 'var(--color-text-muted)', lineHeight: 1, flexShrink: 0 }}>×</button>
+          <button type="button" aria-label="Close" onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.25rem', color: 'var(--color-text-secondary)', lineHeight: 1, flexShrink: 0 }}>×</button>
         </div>
         <div style={{ padding: '1rem', overflowY: 'auto', flex: 1 }}>
-          {loading && <p style={{ color: 'var(--color-text-muted)', textAlign: 'center' }}>Loading…</p>}
+          {loading && <p style={{ color: 'var(--color-text-secondary)', textAlign: 'center' }}>Loading…</p>}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '0.75rem' }}>
             {filtered.filter((i) => i.mimeType.startsWith('image/')).map((item) => {
               const already = alreadySelected.includes(item.id)
