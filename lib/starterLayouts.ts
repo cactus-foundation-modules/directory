@@ -1,8 +1,17 @@
 // Starter layout templates for the directoryCategory/directoryEntry layout
 // types, collected by scripts/generate-module-layout-types.mjs (core) via this
 // module's cactus.module.json layoutTypes.types[].starterImport/starterExport.
-// Seeded as drafts only (see lib/setup/starterLayouts.ts) - the site owner
-// opts in by publishing one.
+//
+// Seeding is opt-in per template: core's seedTemplates() copies the ones marked
+// publishByDefault and skips the rest entirely - it does not seed drafts. None
+// were marked here, so an install got no Directory layouts at all and both tabs
+// sat empty under Layouts with nothing to say why; worse, the stamp that records
+// the one-and-only seeding attempt goes on regardless, so no later release could
+// fill them in. Exactly one template per type is marked now, the full-width one
+// in each case: the same arrangement as the hardcoded category and entry pages it
+// takes over from, map included - DirectoryCategoryMap renders null when there is
+// nothing pinned, just as the hardcoded page hides it. The other four are still
+// there in the + New Layout picker.
 
 const block = (type: string, id: string, props: Record<string, unknown> = {}) => ({ type, props: { id, ...props } })
 
@@ -48,6 +57,9 @@ export function directoryCategoryStarters() {
       id: 'starter-directory-category-banner',
       name: 'Full Width with Banner',
       description: 'Header, full-width map banner, then a full-width grid of listings below.',
+      // The seeded default: header, map, listings - the hardcoded category page's
+      // own order, and the map drops out by itself when nothing is pinned.
+      publishByDefault: true,
       data: {
         content: [
           block('DirectoryCategoryHeader', 'header-1'),
@@ -97,6 +109,9 @@ export function directoryEntryStarters() {
       id: 'starter-directory-entry-hero',
       name: 'Full Width Hero then Details',
       description: 'Full-width header, boxed contact and location details, related listings below.',
+      // The seeded default: one column - listing, contact, map, related - which is
+      // how the hardcoded entry page reads.
+      publishByDefault: true,
       data: {
         content: [
           block('DirectoryEntryHeader', 'header-1'),
