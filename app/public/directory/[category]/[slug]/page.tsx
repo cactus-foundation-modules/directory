@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { Render } from '@puckeditor/core/rsc'
 import { getEntryForPublic } from '@/modules/directory/lib/db'
 import { getDirectorySettings } from '@/modules/directory/lib/settings'
 import { getMediaUrls } from '@/modules/directory/lib/media'
@@ -12,6 +11,7 @@ import { resolveThemeLayout } from '@/lib/layout/resolveThemeLayout'
 import { getModuleLayoutPuckRscConfig } from '@/lib/puck/config.rsc'
 import { injectEntryContext } from '@/modules/directory/lib/inject-entry-context'
 import type { PuckData } from '@/modules/directory/lib/types'
+import { CactusRender } from '@/lib/puck/CactusRender'
 
 type Props = { params: Promise<{ category: string; slug: string }> }
 
@@ -38,7 +38,7 @@ export default async function DirectoryEntryPage({ params }: Props) {
   const layout = await resolveThemeLayout('directoryEntry', { moduleName: 'directory', slug: entry.slug })
   if (layout?.builderData) {
     const data = injectEntryContext(layout.builderData as PuckData, { entrySlug: entry.slug, categorySlug: entry.categorySlug })
-    return <Render config={getModuleLayoutPuckRscConfig('directoryEntry') as any} data={data as any} />
+    return <CactusRender config={getModuleLayoutPuckRscConfig('directoryEntry') as any} data={data as any} />
   }
 
   const [settings, imageUrls] = await Promise.all([
@@ -88,7 +88,7 @@ export default async function DirectoryEntryPage({ params }: Props) {
 
       {entry.shortDescription && <p style={{ fontSize: '1.125rem', color: 'var(--color-text-muted)' }}>{entry.shortDescription}</p>}
 
-      {entry.description && <Render config={descriptionRscConfig} data={entry.description as any} />}
+      {entry.description && <CactusRender config={descriptionRscConfig} data={entry.description as any} />}
 
       {hasContact && (
         <div className="dir-contact-card">

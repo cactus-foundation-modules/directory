@@ -1,12 +1,12 @@
 import { connection } from 'next/server'
 import Link from 'next/link'
-import { Render } from '@puckeditor/core/rsc'
 import { getEntryForPublic } from '@/modules/directory/lib/db'
 import { getMediaUrls } from '@/modules/directory/lib/media'
 import { getDirectorySettings } from '@/modules/directory/lib/settings'
 import { descriptionRscConfig } from '@/modules/directory/components/puck/descriptionRscConfig'
 import DirectoryStyles from '@/modules/directory/components/public/DirectoryStyles'
 import { directoryEntryHeaderPuckComponent, type DirectoryEntryHeaderProps } from './DirectoryEntryHeader'
+import { CactusRender } from '@/lib/puck/CactusRender'
 
 export async function DirectoryEntryHeaderRsc(props: DirectoryEntryHeaderProps) {
   await connection()
@@ -49,7 +49,7 @@ export async function DirectoryEntryHeaderRsc(props: DirectoryEntryHeaderProps) 
         )
       )}
       {entry.shortDescription && <p style={{ fontSize: '1.125rem', color: 'var(--color-text-muted)' }}>{entry.shortDescription}</p>}
-      {entry.description && <Render config={descriptionRscConfig} data={entry.description as any} />}
+      {entry.description && <CactusRender config={descriptionRscConfig} data={entry.description as any} />}
       {entry.tags.length > 0 && (
         <div className="dir-tags">
           {entry.tags.map((tag) => <span key={tag} className="dir-tag-chip">{tag}</span>)}

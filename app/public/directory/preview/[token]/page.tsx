@@ -1,12 +1,12 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { Render } from '@puckeditor/core/rsc'
 import { getEntryByPreviewTokenHash } from '@/modules/directory/lib/db'
 import { hashPreviewToken } from '@/modules/directory/lib/preview'
 import { getMediaUrls } from '@/modules/directory/lib/media'
 import { descriptionRscConfig } from '@/modules/directory/components/puck/descriptionRscConfig'
 import DirectoryStyles from '@/modules/directory/components/public/DirectoryStyles'
 import EntryLocationMap from '@/modules/directory/components/public/EntryLocationMap'
+import { CactusRender } from '@/lib/puck/CactusRender'
 
 type Props = { params: Promise<{ token: string }> }
 
@@ -44,7 +44,7 @@ export default async function DirectoryPreviewPage({ params }: Props) {
       )}
 
       {entry.shortDescription && <p style={{ fontSize: '1.125rem', color: 'var(--color-text-muted)' }}>{entry.shortDescription}</p>}
-      {entry.description && <Render config={descriptionRscConfig} data={entry.description as any} />}
+      {entry.description && <CactusRender config={descriptionRscConfig} data={entry.description as any} />}
 
       {entry.lat !== null && entry.lng !== null && (
         <div className="dir-location">

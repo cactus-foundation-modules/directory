@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { Render } from '@puckeditor/core/rsc'
 import {
   getCategoryBySlug, getPublishedEntriesForCategory, getDistinctAreasForCategory,
   categoryHasRouteMarkers, getPublishedMapPins,
@@ -17,6 +16,7 @@ import { resolveThemeLayout } from '@/lib/layout/resolveThemeLayout'
 import { getModuleLayoutPuckRscConfig } from '@/lib/puck/config.rsc'
 import { injectCategoryContext } from '@/modules/directory/lib/inject-category-context'
 import type { PuckData } from '@/modules/directory/lib/types'
+import { CactusRender } from '@/lib/puck/CactusRender'
 
 type Props = {
   params: Promise<{ category: string }>
@@ -55,7 +55,7 @@ export default async function DirectoryCategoryPage({ params, searchParams }: Pr
   const layout = await resolveThemeLayout('directoryCategory', { moduleName: 'directory', slug: category.slug })
   if (layout?.builderData) {
     const data = injectCategoryContext(layout.builderData as PuckData, { categorySlug: category.slug, categoryId: category.id, area, sort })
-    return <Render config={getModuleLayoutPuckRscConfig('directoryCategory') as any} data={data as any} />
+    return <CactusRender config={getModuleLayoutPuckRscConfig('directoryCategory') as any} data={data as any} />
   }
 
   const entries = area ? await getPublishedEntriesForCategory(category.id, { area, sort }) : await getPublishedEntriesForCategory(category.id, { sort })
