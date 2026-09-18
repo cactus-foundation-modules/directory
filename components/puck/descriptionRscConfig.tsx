@@ -1,4 +1,4 @@
-import { directoryProseRscFieldDef } from './DirectoryProse'
+import { directoryProseRscFieldDef } from './DirectoryProseRsc'
 
 export const descriptionRscConfig = {
   categories: {

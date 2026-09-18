@@ -19,13 +19,6 @@ export function DirectoryProse(props: DirectoryProseProps) {
   return <div className="dir-prose" dangerouslySetInnerHTML={{ __html: html }} />
 }
 
-export function DirectoryProseRsc(props: DirectoryProseProps) {
-  const { content } = props
-  if (!content || React.isValidElement(content)) return <DirectoryProse {...props} />
-  const html = renderProseHtml(content as any)
-  return <div className="dir-prose" dangerouslySetInnerHTML={{ __html: html }} />
-}
-
 export const directoryProseFieldDef = {
   label: 'Prose',
   fields: {
@@ -47,12 +40,4 @@ export const directoryProseFieldDef = {
   render: DirectoryProse,
 }
 
-// RSC variant: the richtext field type triggers a client-only hook even inside
-// <Render>, so - mirroring Gazette's own RSC treatment - the RSC field def
-// swaps to a plain textarea. Fields are never shown for public rendering
-// anyway; this only avoids that hook running server-side.
-export const directoryProseRscFieldDef = {
-  ...directoryProseFieldDef,
-  fields: { content: { type: 'textarea' as const, label: 'Content (HTML or TipTap JSON)' } },
-  render: DirectoryProseRsc,
-}
+// The RSC variant lives in DirectoryProseRsc.tsx (server-only, sanitised).
