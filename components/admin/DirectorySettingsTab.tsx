@@ -89,7 +89,7 @@ export function DirectorySettingsTab() {
           onChange={(e) => setIntroText(e.target.value)}
           placeholder="Shown above the category grid on the directory front page"
         />
-        <div style={{ marginTop: '0.75rem' }}>
+        <div className="settings-field" style={{ marginTop: '0.75rem' }}>
           <label style={labelStyle}>Featured label</label>
           <input style={inputStyle} value={featuredLabel} onChange={(e) => setFeaturedLabel(e.target.value)} maxLength={50} />
           <p style={{ fontSize: '0.6875rem', color: 'var(--color-text-secondary)', margin: '0.25rem 0 0' }}>The badge shown on entries marked &quot;Featured&quot; - e.g. &quot;Featured&quot; or &quot;Sponsored&quot;.</p>
@@ -99,19 +99,19 @@ export function DirectorySettingsTab() {
       <div className="card">
         <h3 style={{ margin: '0 0 0.75rem', fontSize: '0.9375rem' }}>Map</h3>
         <p style={{ fontSize: '0.6875rem', color: 'var(--color-text-secondary)', margin: '0 0 0.5rem' }}>Where the directory map opens by default, before it zooms to fit your entries.</p>
-        <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '0.75rem', flexWrap: 'wrap' }}>
-          <div style={{ flex: '1 1 8rem' }}>
+        <div className="settings-fields">
+          <div className="settings-field">
             <label style={labelStyle}>Map centre latitude</label>
             <input style={inputStyle} value={mapCentreLat} onChange={(e) => setMapCentreLat(e.target.value)} />
           </div>
-          <div style={{ flex: '1 1 8rem' }}>
+          <div className="settings-field">
             <label style={labelStyle}>Map centre longitude</label>
             <input style={inputStyle} value={mapCentreLng} onChange={(e) => setMapCentreLng(e.target.value)} />
           </div>
-        </div>
-        <div>
-          <label style={labelStyle}>Default map zoom</label>
-          <input type="number" min={1} max={18} style={{ ...inputStyle, maxWidth: 100 }} value={mapZoom} onChange={(e) => setMapZoom(Number(e.target.value))} />
+          <div className="settings-field">
+            <label style={labelStyle}>Default map zoom</label>
+            <input type="number" min={1} max={18} style={{ ...inputStyle, maxWidth: 100 }} value={mapZoom} onChange={(e) => setMapZoom(Number(e.target.value))} />
+          </div>
         </div>
       </div>
 
