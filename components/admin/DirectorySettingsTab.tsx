@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import type { DirectorySettings } from '@/modules/directory/lib/types'
 import { SettingsHeaderActions, SettingsHeaderStatus } from '@/components/admin/SettingsHeaderActions'
+import { InfoTip } from '@/components/admin/InfoTip'
 
 const inputStyle = { width: '100%', padding: '0.5rem', border: '1px solid var(--color-border)', borderRadius: 6, background: 'var(--color-bg)', color: 'var(--color-text)', fontFamily: 'inherit', fontSize: '0.875rem' }
 const labelStyle = { display: 'block', fontSize: '0.75rem', color: 'var(--color-text-secondary)', marginBottom: '0.25rem' }
@@ -80,25 +81,33 @@ export function DirectorySettingsTab() {
 
       <div className="settings-cols">
       <div className="card">
-        <h3 style={{ margin: '0 0 0.75rem', fontSize: '0.9375rem' }}>Front page</h3>
-        <label style={labelStyle}>Intro text</label>
-        <textarea
-          style={{ ...inputStyle, resize: 'vertical' }}
-          rows={3}
-          value={introText}
-          onChange={(e) => setIntroText(e.target.value)}
-          placeholder="Shown above the category grid on the directory front page"
-        />
-        <div className="settings-field" style={{ marginTop: '0.75rem' }}>
+        <div className="card-title">Front page and import</div>
+        <div className="field field--wide">
+          <label style={labelStyle}>Intro text</label>
+          <textarea
+            style={{ ...inputStyle, resize: 'vertical' }}
+            rows={3}
+            value={introText}
+            onChange={(e) => setIntroText(e.target.value)}
+            placeholder="Shown above the category grid on the directory front page"
+          />
+        </div>
+        <div className="settings-field">
           <label style={labelStyle}>Featured label</label>
           <input style={inputStyle} value={featuredLabel} onChange={(e) => setFeaturedLabel(e.target.value)} maxLength={50} />
           <p style={{ fontSize: '0.6875rem', color: 'var(--color-text-secondary)', margin: '0.25rem 0 0' }}>The badge shown on entries marked &quot;Featured&quot; - e.g. &quot;Featured&quot; or &quot;Sponsored&quot;.</p>
         </div>
+        <div className="field field--beside-input">
+          <label className="settings-check">
+            <input type="checkbox" checked={csvImportEnabled} onChange={(e) => setCsvImportEnabled(e.target.checked)} />
+            Allow CSV import
+            <InfoTip>Turn off to hide the CSV import screen from Directory managers.</InfoTip>
+          </label>
+        </div>
       </div>
 
       <div className="card">
-        <h3 style={{ margin: '0 0 0.75rem', fontSize: '0.9375rem' }}>Map</h3>
-        <p style={{ fontSize: '0.6875rem', color: 'var(--color-text-secondary)', margin: '0 0 0.5rem' }}>Where the directory map opens by default, before it zooms to fit your entries.</p>
+        <div className="card-title">Map <InfoTip>Where the directory map opens by default, before it zooms to fit your entries.</InfoTip></div>
         <div className="settings-fields">
           <div className="settings-field">
             <label style={labelStyle}>Map centre latitude</label>
@@ -115,14 +124,6 @@ export function DirectorySettingsTab() {
         </div>
       </div>
 
-      <div className="card">
-        <h3 style={{ margin: '0 0 0.75rem', fontSize: '0.9375rem' }}>Import</h3>
-        <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8125rem' }}>
-          <input type="checkbox" checked={csvImportEnabled} onChange={(e) => setCsvImportEnabled(e.target.checked)} />
-          Allow CSV import
-        </label>
-        <p style={{ fontSize: '0.6875rem', color: 'var(--color-text-secondary)', margin: '0.25rem 0 0' }}>Turn off to hide the CSV import screen from Directory managers.</p>
-      </div>
       </div>
     </div>
   )
