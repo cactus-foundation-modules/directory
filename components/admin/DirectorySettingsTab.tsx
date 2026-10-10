@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import type { DirectorySettings } from '@/modules/directory/lib/types'
+import { SettingsHeaderActions, SettingsHeaderStatus } from '@/components/admin/SettingsHeaderActions'
 
-const inputStyle = { width: '100%', maxWidth: 320, padding: '0.5rem', border: '1px solid var(--color-border)', borderRadius: 6, background: 'var(--color-bg)', color: 'var(--color-text)', fontFamily: 'inherit', fontSize: '0.875rem' }
+const inputStyle = { width: '100%', padding: '0.5rem', border: '1px solid var(--color-border)', borderRadius: 6, background: 'var(--color-bg)', color: 'var(--color-text)', fontFamily: 'inherit', fontSize: '0.875rem' }
 const labelStyle = { display: 'block', fontSize: '0.75rem', color: 'var(--color-text-secondary)', marginBottom: '0.25rem' }
 
 export function DirectorySettingsTab() {
@@ -69,10 +70,16 @@ export function DirectorySettingsTab() {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: 480 }}>
+    <div>
       {error && <div className="alert alert-danger" style={{ fontSize: '0.8125rem' }}>{error}</div>}
 
-      <div>
+      <SettingsHeaderActions>
+        <SettingsHeaderStatus message={saved ? 'Saved' : null} error={error} />
+        <button className="btn btn-primary" onClick={save} disabled={saving}>{saving ? 'Saving…' : 'Save changes'}</button>
+      </SettingsHeaderActions>
+
+      <div className="settings-cols">
+      <div className="card">
         <h3 style={{ margin: '0 0 0.75rem', fontSize: '0.9375rem' }}>Front page</h3>
         <label style={labelStyle}>Intro text</label>
         <textarea
@@ -89,15 +96,15 @@ export function DirectorySettingsTab() {
         </div>
       </div>
 
-      <div>
+      <div className="card">
         <h3 style={{ margin: '0 0 0.75rem', fontSize: '0.9375rem' }}>Map</h3>
         <p style={{ fontSize: '0.6875rem', color: 'var(--color-text-secondary)', margin: '0 0 0.5rem' }}>Where the directory map opens by default, before it zooms to fit your entries.</p>
-        <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '0.75rem' }}>
-          <div>
+        <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '0.75rem', flexWrap: 'wrap' }}>
+          <div style={{ flex: '1 1 8rem' }}>
             <label style={labelStyle}>Map centre latitude</label>
             <input style={inputStyle} value={mapCentreLat} onChange={(e) => setMapCentreLat(e.target.value)} />
           </div>
-          <div>
+          <div style={{ flex: '1 1 8rem' }}>
             <label style={labelStyle}>Map centre longitude</label>
             <input style={inputStyle} value={mapCentreLng} onChange={(e) => setMapCentreLng(e.target.value)} />
           </div>
@@ -108,7 +115,7 @@ export function DirectorySettingsTab() {
         </div>
       </div>
 
-      <div>
+      <div className="card">
         <h3 style={{ margin: '0 0 0.75rem', fontSize: '0.9375rem' }}>Import</h3>
         <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8125rem' }}>
           <input type="checkbox" checked={csvImportEnabled} onChange={(e) => setCsvImportEnabled(e.target.checked)} />
@@ -116,9 +123,6 @@ export function DirectorySettingsTab() {
         </label>
         <p style={{ fontSize: '0.6875rem', color: 'var(--color-text-secondary)', margin: '0.25rem 0 0' }}>Turn off to hide the CSV import screen from Directory managers.</p>
       </div>
-
-      <div>
-        <button className="btn btn-primary btn-sm" onClick={save} disabled={saving}>{saving ? 'Saving…' : saved ? 'Saved ✓' : 'Save'}</button>
       </div>
     </div>
   )
