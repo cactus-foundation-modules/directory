@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAdminPath } from '@/components/admin/AdminPathContext'
+import { useAdminConfirm } from '@/components/admin/useAdminConfirm'
 import type { DirectoryCategoryWithCount } from '@/modules/directory/lib/types'
 import type { DirectoryEntryListItem } from '@/modules/directory/lib/types'
 
@@ -27,6 +28,7 @@ export default function EntriesScreen() {
   const [loading, setLoading] = useState(true)
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [busy, setBusy] = useState(false)
+  const [askConfirm, confirmNode] = useAdminConfirm()
 
   const [category, setCategory] = useState(() => searchParams.get('category') ?? '')
   const [status, setStatus] = useState('')
@@ -108,7 +110,7 @@ export default function EntriesScreen() {
 
   async function bulkDelete() {
     if (!selected.size) return
-    if (!confirm(`Delete ${selected.size} entries? This cannot be undone.`)) return
+    if (!(await askConfirm({ title: `Delete ${selected.size} entries?`, message: 'This cannot be undone.' }))) return
     setBusy(true)
     await fetch('/api/m/directory/admin/entries/bulk', {
       method: 'DELETE', headers: { 'Content-Type': 'application/json' },
@@ -126,7 +128,7 @@ export default function EntriesScreen() {
   }
 
   async function rowDelete(id: string) {
-    if (!confirm('Delete this entry? This cannot be undone.')) return
+    if (!(await askConfirm({ title: 'Delete this entry?', message: 'This cannot be undone.' }))) return
     await fetch(`/api/m/directory/admin/entries/${id}`, { method: 'DELETE' })
     load()
   }
@@ -135,6 +137,7 @@ export default function EntriesScreen() {
 
   return (
     <div>
+      {confirmNode}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
         <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
           <select style={inputStyle} value={category} onChange={(e) => updateFilter(setCategory, e.target.value)}>

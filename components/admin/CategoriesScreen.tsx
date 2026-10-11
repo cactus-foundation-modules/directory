@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import { useAdminPath } from '@/components/admin/AdminPathContext'
+import { useAdminConfirm } from '@/components/admin/useAdminConfirm'
 import type { DirectoryCategoryWithCount } from '@/modules/directory/lib/types'
 
 const inputStyle = { padding: '0.375rem 0.625rem', border: '1px solid var(--color-border)', borderRadius: 6, background: 'var(--color-bg)', color: 'var(--color-text)' }
@@ -33,6 +34,7 @@ function EditRow({ category, onSave, onCancel }: {
 
 export default function CategoriesScreen() {
   const adminPath = useAdminPath()
+  const [askConfirm, confirmNode] = useAdminConfirm()
   const [categories, setCategories] = useState<DirectoryCategoryWithCount[]>([])
   const [loading, setLoading] = useState(true)
   const [editingId, setEditingId] = useState<string | null>(null)
@@ -83,7 +85,7 @@ export default function CategoriesScreen() {
       alert(`This category has ${category.entryCount} ${category.entryCount === 1 ? 'entry' : 'entries'} in it. Move or delete them first.`)
       return
     }
-    if (!confirm(`Delete "${category.name}"?`)) return
+    if (!(await askConfirm({ title: `Delete "${category.name}"?`, message: 'The category is removed straight away.' }))) return
     await fetch(`/api/m/directory/admin/categories/${category.id}`, { method: 'DELETE' })
     load()
   }
@@ -136,6 +138,7 @@ export default function CategoriesScreen() {
 
   return (
     <div>
+      {confirmNode}
       <div className="card" style={{ padding: '1rem', marginBottom: '1.5rem' }}>
         <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
           <input style={{ ...inputStyle, width: '3rem', textAlign: 'center' }} value={newIcon} onChange={(e) => setNewIcon(e.target.value)} placeholder="🌵" maxLength={4} />

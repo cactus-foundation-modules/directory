@@ -1,7 +1,7 @@
 {
   "name": "directory",
-  "version": "0.1.20",
-  "requiresCoreVersion": "0.5.1763",
+  "version": "0.1.21",
+  "requiresCoreVersion": "0.5.1772",
   "tablePrefix": "dir_",
   "description": "Map-based listings with categories, featured entries, and a public directory.",
   "publicBasePath": "directory",
