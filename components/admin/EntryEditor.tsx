@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Puck } from '@puckeditor/core'
 import type { Data } from '@puckeditor/core'
 import '@puckeditor/core/no-external.css'
+import { tabbedFieldsOverride } from '@/lib/puck/tabs/TabbedFieldsOverride'
 import { useAdminPath } from '@/components/admin/AdminPathContext'
 import { useUnsavedChanges } from '@/components/admin/useUnsavedChanges'
 import { UnsavedChangesModal } from '@/components/admin/UnsavedChangesModal'
@@ -17,6 +18,9 @@ import type { DirectoryCategoryWithCount, DirectoryEntryWithCategory, PuckData }
 
 const inputStyle = { width: '100%', padding: '0.5rem', border: '1px solid var(--color-border)', borderRadius: 6, background: 'var(--color-bg)', color: 'var(--color-text)', fontFamily: 'inherit', fontSize: '0.875rem' }
 const labelStyle = { display: 'block', fontSize: '0.75rem', color: 'var(--color-text-secondary)', marginBottom: '0.25rem' }
+
+// Module-level so Puck sees the same override object on every render.
+const PUCK_OVERRIDES = { fields: tabbedFieldsOverride }
 
 function slugify(name: string): string {
   return name.toLowerCase().replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-').replace(/-+/g, '-').slice(0, 100)
@@ -307,6 +311,7 @@ export default function EntryEditor({ entry, categories }: Props) {
           <div style={{ minHeight: 320, border: '1px solid var(--color-border)', borderRadius: 6, overflow: 'hidden' }}>
             <Puck
               config={descriptionEditorConfig as any}
+              overrides={PUCK_OVERRIDES}
               data={description as unknown as Data}
               onChange={(data) => setDescription(data as unknown as PuckData)}
               iframe={{ enabled: false }}
